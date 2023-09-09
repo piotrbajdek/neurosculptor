@@ -1,8 +1,6 @@
 # INTRODUCING NEUROSCULPTOR
 
-![Neurosculptor](https://github.com/piotrbajdek/neurosculptor) is a Lua-based deep learning program distributed under the ![BSD 3-Clause License](https://github.com/piotrbajdek/neurosculptor/blob/main/LICENSE.md).
-
-It is a highly configurable classification tool that allows for experimentation with various architectures of dense neural networks in a user-friendly manner.
+![Neurosculptor](https://github.com/piotrbajdek/neurosculptor) is a Lua-based deep learning program distributed under the ![BSD 3-Clause License](https://github.com/piotrbajdek/neurosculptor/blob/main/LICENSE.md). It is a highly configurable classification tool that allows for experimentation with various architectures of dense neural networks in a user-friendly manner.
 
 Unlike its primary use for straightforward classification tasks, this software is primarily developed to tackle complex logical problems that are often beyond human solving capabilities. Its potential applications span across various fields such as science, economics, and more.
 
