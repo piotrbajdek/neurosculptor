@@ -6,9 +6,9 @@ It is a highly configurable classification tool that allows for experimentation 
 
 Unlike its primary use for straightforward classification tasks, this software is primarily developed to tackle complex logical problems that are often beyond human solving capabilities. Its potential applications span across various fields such as science, economics, and more.
 
-The number of hidden layers can be adjusted from 2 to 5, resulting in a total of 4 to 7 layers. The number of neurons in the input layer and each hidden layer can be freely configured and is virtually limitless. The number of output neurons is set to 1.
+Users can experiment with hyperparameter tuning using configuration files. The number of hidden layers can be adjusted from 2 to 5, resulting in a total of 4 to 7 layers. The number of neurons in the input layer and each hidden layer can be freely configured and is virtually limitless. The number of output neurons is set to 1.
 
-Users can experiment with hyperparameter tuning using configuration files. In general, 2 hidden layers are suitable for highly nonlinear separation tasks, while 3 hidden layers excel at handling tasks that challenge human capabilities. Architectures with 4 and 5 hidden layers theoretically have the potential to tackle tasks beyond human capabilities but may pose challenges during training.
+In general, 2 hidden layers are suitable for highly nonlinear separation tasks, while 3 hidden layers excel at handling tasks that challenge human capabilities. Architectures with 4 and 5 hidden layers theoretically have the potential to tackle tasks beyond human capabilities but may pose challenges during training.
 
 ## Configuration files
 
