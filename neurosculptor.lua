@@ -39,7 +39,7 @@ local grey = "\27[38;5;246m"
 local reset = "\27[0m"
 
 print("Lua-Based Deep Learning Program")
-print(grey .. "neurosculptor" .. reset .. " v0.2.0 12.09.2023")
+print(grey .. "neurosculptor" .. reset .. " v0.2.1 12.09.2023")
 print("Copyright © 2023-present, Piotr Bajdek")
 print("")
 
@@ -59,7 +59,12 @@ else
     print(red .. "Error when opening the file activation_input.conf" .. reset)
 end
 
-if activation_input == "gelu" or activation_input == "GELU" then
+if activation_input == "colu" or activation_input == "CoLU" then
+    function activation_input(x)
+        local exp_x = math.exp(x)
+        return x / (1 - x ^ -(x + exp_x))
+    end
+elseif activation_input == "gelu" or activation_input == "GELU" then
     function activation_input(x)
         return 0.5
             * x
@@ -81,6 +86,10 @@ elseif activation_input == "sigmoid" or activation_input == "Sigmoid" then
     function activation_input(x)
         return 1 / (1 + math.exp(-x))
     end
+elseif activation_input == "silu" or activation_input == "SiLU" then
+    function activation_input(x)
+        return x * (1 / (1 + math.exp(-x)))
+    end
 elseif activation_input == "swish" or activation_input == "Swish" then
     function activation_input(x)
         return x / (1 + math.exp(-x))
@@ -88,6 +97,12 @@ elseif activation_input == "swish" or activation_input == "Swish" then
 elseif activation_input == "tanh" or activation_input == "Tanh" then
     function activation_input(x)
         return (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x))
+    end
+elseif activation_input == "tanhexp" or activation_input == "TanhExp" then
+    function activation_input(x)
+        local exp_x = math.exp(x)
+        local exp_neg_x = math.exp(-x)
+        return x * (exp_x - exp_neg_x) / (exp_x + exp_neg_x)
     end
 else
     print(red .. "Invalid value in activation_input.conf" .. reset)
@@ -109,7 +124,12 @@ else
     print(red .. "Error when opening the file activation_hidden.conf" .. reset)
 end
 
-if activation_hd == "gelu" or activation_hd == "GELU" then
+if activation_hd == "colu" or activation_hd == "CoLU" then
+    function activation_hd(x)
+        local exp_x = math.exp(x)
+        return x / (1 - x ^ -(x + exp_x))
+    end
+elseif activation_hd == "gelu" or activation_hd == "GELU" then
     function activation_hd(x)
         return 0.5
             * x
@@ -131,6 +151,10 @@ elseif activation_hd == "sigmoid" or activation_hd == "Sigmoid" then
     function activation_hd(x)
         return 1 / (1 + math.exp(-x))
     end
+elseif activation_hd == "silu" or activation_hd == "SiLU" then
+    function activation_hd(x)
+        return x * (1 / (1 + math.exp(-x)))
+    end
 elseif activation_hd == "swish" or activation_hd == "Swish" then
     function activation_hd(x)
         return x / (1 + math.exp(-x))
@@ -138,6 +162,12 @@ elseif activation_hd == "swish" or activation_hd == "Swish" then
 elseif activation_hd == "tanh" or activation_hd == "Tanh" then
     function activation_hd(x)
         return (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x))
+    end
+elseif activation_hd == "tanhexp" or activation_hd == "TanhExp" then
+    function activation_hd(x)
+        local exp_x = math.exp(x)
+        local exp_neg_x = math.exp(-x)
+        return x * (exp_x - exp_neg_x) / (exp_x + exp_neg_x)
     end
 else
     print(red .. "Invalid value in activation_hd.conf" .. reset)
@@ -159,7 +189,12 @@ else
     print(red .. "Error when opening the file activation_output.conf" .. reset)
 end
 
-if activation_output == "gelu" or activation_output == "GELU" then
+if activation_output == "colu" or activation_output == "CoLU" then
+    function activation_output(x)
+        local exp_x = math.exp(x)
+        return x / (1 - x ^ -(x + exp_x))
+    end
+elseif activation_output == "gelu" or activation_output == "GELU" then
     function activation_output(x)
         return 0.5
             * x
@@ -181,6 +216,10 @@ elseif activation_output == "sigmoid" or activation_output == "Sigmoid" then
     function activation_output(x)
         return 1 / (1 + math.exp(-x))
     end
+elseif activation_output == "silu" or activation_output == "SiLU" then
+    function activation_output(x)
+        return x * (1 / (1 + math.exp(-x)))
+    end
 elseif activation_output == "swish" or activation_output == "Swish" then
     function activation_output(x)
         return x / (1 + math.exp(-x))
@@ -188,6 +227,12 @@ elseif activation_output == "swish" or activation_output == "Swish" then
 elseif activation_output == "tanh" or activation_output == "Tanh" then
     function activation_output(x)
         return (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x))
+    end
+elseif activation_output == "tanhexp" or activation_output == "TanhExp" then
+    function activation_output(x)
+        local exp_x = math.exp(x)
+        local exp_neg_x = math.exp(-x)
+        return x * (exp_x - exp_neg_x) / (exp_x + exp_neg_x)
     end
 else
     print(red .. "Invalid value in activation_output.conf" .. reset)

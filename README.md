@@ -8,11 +8,11 @@ Users can experiment with hyperparameter tuning using configuration files. The n
 
 In general, 2 hidden layers are suitable for highly nonlinear separation tasks, while 3 hidden layers excel at handling tasks that challenge human capabilities. Architectures with 4 and 5 hidden layers theoretically have the potential to tackle tasks beyond human capabilities but may pose challenges during training.
 
-Neurosculptor v0.2.0 has been verified to work properly with Lua 5.4.4 and LuaJIT 2.1.0-beta3. In terms of speed, LuaJIT is 14 times faster than Lua when benchmarked on a network composed of 250 neurons with the Sigmoid activation function.
+Neurosculptor v0.2.1 has been verified to work properly with Lua 5.4.4 and LuaJIT 2.1.0-beta3. In terms of speed, LuaJIT is 14 times faster than Lua when benchmarked on a network composed of 250 neurons with the Sigmoid activation function.
 
 ## Configuration files
 
-Available activation functions include GELU, ReLU, Sigmoid, Swish, and Tanh.
+Available activation functions include CoLU, GELU, ReLU, Sigmoid, SiLU, Swish, Tanh, and TanhExp.
 
 `activation_input.conf` - Set the activation function for the input layer.
 
