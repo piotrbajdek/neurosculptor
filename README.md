@@ -8,9 +8,17 @@ Users can experiment with hyperparameter tuning using configuration files. The n
 
 In general, 2 hidden layers are suitable for highly nonlinear separation tasks, while 3 hidden layers excel at handling tasks that challenge human capabilities. Architectures with 4 and 5 hidden layers theoretically have the potential to tackle tasks beyond human capabilities but may pose challenges during training.
 
-Neurosculptor v0.1.0 has been verified to work properly with Lua 5.4.4 and LuaJIT 2.1.0-beta3. In terms of speed, LuaJIT is 14 times faster than Lua when benchmarked on a network composed of 250 neurons.
+Neurosculptor v0.2.0 has been verified to work properly with Lua 5.4.4 and LuaJIT 2.1.0-beta3. In terms of speed, LuaJIT is 14 times faster than Lua when benchmarked on a network composed of 250 neurons with the Sigmoid activation function.
 
 ## Configuration files
+
+Available activation functions include GELU, ReLU, Sigmoid, Swish, and Tanh.
+
+`activation_input.conf` - Set the activation function for the input layer
+
+`activation_hidden.conf` - Set the activation function for the hidden layers.
+
+`activation_output.conf` - Set the activation function for the output layer.
 
 `learning_rate.conf` - Set a real number.
 
@@ -28,9 +36,9 @@ Neurosculptor v0.1.0 has been verified to work properly with Lua 5.4.4 and LuaJI
 
 `hidden_5_size.conf` - Configure the number of neurons in the fifth hidden layer.
 
-`train_file_x.csv` - This file should contain a binary matrix consisting of the numbers 0 and 1.
+`train_file_x.csv` - In the simplest scenario with the Sigmoid activation function, this file should contain a binary matrix consisting of the numbers 0 and 1.
 
-`train_file_y.txt` - This file should contain a single column of the numbers 0 and 1, corresponding to the columns in `train_file_x.csv`.
+`train_file_y.txt` - In the simplest scenario with the Sigmoid activation function, this file should contain a single column of the numbers 0 and 1, corresponding to the columns in `train_file_x.csv`.
 
 `test_file.csv` - Testing data should be formatted like `train_file_x.csv` but can include any number of lines, with each line representing a separate input for analysis.
 

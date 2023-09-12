@@ -39,13 +39,158 @@ local grey = "\27[38;5;246m"
 local reset = "\27[0m"
 
 print("Lua-Based Deep Learning Program")
-print(grey .. "neurosculptor" .. reset .. " v0.1.0 09.09.2023")
+print(grey .. "neurosculptor" .. reset .. " v0.2.0 12.09.2023")
 print("Copyright © 2023-present, Piotr Bajdek")
 print("")
 
--- Funkcja sigmoidalna
-function sigmoid(x)
-    return 1 / (1 + math.exp(-x))
+-- Otwieranie pliku do odczytu
+local file = io.open("activation_input.conf", "r")
+if file then
+    -- Wczytanie jednego słowa ze strumienia
+    activation_input = file:read("*a")
+    -- Zamknięcie pliku
+    file:close()
+    -- Usunięcie białych znaków na początku i końcu słowa
+    activation_input = activation_input:match("^%s*(.-)%s*$")
+    -- Wyświetlenie wczytanego słowa
+    print("Loaded " .. grey .. "activation_input.conf" .. reset .. ":" .. red, activation_input .. reset)
+else
+    -- Sprawdzenie, czy udało się wczytać activation_input
+    print(red .. "Error when opening the file activation_input.conf" .. reset)
+end
+
+if activation_input == "gelu" or activation_input == "GELU" then
+    function activation_input(x)
+        return 0.5
+            * x
+            * (
+                1
+                + (math.exp(2 * (math.sqrt(2 / math.pi) * (x + 0.044715 * x * x * x))) - 1)
+                    / (math.exp(2 * (math.sqrt(2 / math.pi) * (x + 0.044715 * x * x * x))) + 1)
+            )
+    end
+elseif activation_input == "relu" or activation_input == "ReLU" then
+    function activation_input(x)
+        if x > 0 then
+            return x
+        else
+            return 0
+        end
+    end
+elseif activation_input == "sigmoid" or activation_input == "Sigmoid" then
+    function activation_input(x)
+        return 1 / (1 + math.exp(-x))
+    end
+elseif activation_input == "swish" or activation_input == "Swish" then
+    function activation_input(x)
+        return x / (1 + math.exp(-x))
+    end
+elseif activation_input == "tanh" or activation_input == "Tanh" then
+    function activation_input(x)
+        return (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x))
+    end
+else
+    print(red .. "Invalid value in activation_input.conf" .. reset)
+end
+
+-- Otwieranie pliku do odczytu
+local file = io.open("activation_hidden.conf", "r")
+if file then
+    -- Wczytanie jednego słowa ze strumienia
+    activation_hd = file:read("*a")
+    -- Zamknięcie pliku
+    file:close()
+    -- Usunięcie białych znaków na początku i końcu słowa
+    activation_hd = activation_hd:match("^%s*(.-)%s*$")
+    -- Wyświetlenie wczytanego słowa
+    print("Loaded " .. grey .. "activation_hidden.conf" .. reset .. ": " .. red, activation_hd .. reset)
+else
+    -- Sprawdzenie, czy udało się wczytać activation_hd
+    print(red .. "Error when opening the file activation_hidden.conf" .. reset)
+end
+
+if activation_hd == "gelu" or activation_hd == "GELU" then
+    function activation_hd(x)
+        return 0.5
+            * x
+            * (
+                1
+                + (math.exp(2 * (math.sqrt(2 / math.pi) * (x + 0.044715 * x * x * x))) - 1)
+                    / (math.exp(2 * (math.sqrt(2 / math.pi) * (x + 0.044715 * x * x * x))) + 1)
+            )
+    end
+elseif activation_hd == "relu" or activation_hd == "ReLU" then
+    function activation_hd(x)
+        if x > 0 then
+            return x
+        else
+            return 0
+        end
+    end
+elseif activation_hd == "sigmoid" or activation_hd == "Sigmoid" then
+    function activation_hd(x)
+        return 1 / (1 + math.exp(-x))
+    end
+elseif activation_hd == "swish" or activation_hd == "Swish" then
+    function activation_hd(x)
+        return x / (1 + math.exp(-x))
+    end
+elseif activation_hd == "tanh" or activation_hd == "Tanh" then
+    function activation_hd(x)
+        return (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x))
+    end
+else
+    print(red .. "Invalid value in activation_hd.conf" .. reset)
+end
+
+-- Otwieranie pliku do odczytu
+local file = io.open("activation_output.conf", "r")
+if file then
+    -- Wczytanie jednego słowa ze strumienia
+    activation_output = file:read("*a")
+    -- Zamknięcie pliku
+    file:close()
+    -- Usunięcie białych znaków na początku i końcu słowa
+    activation_output = activation_output:match("^%s*(.-)%s*$")
+    -- Wyświetlenie wczytanego słowa
+    print("Loaded " .. grey .. "activation_output.conf" .. reset .. ":" .. red, activation_output .. reset)
+else
+    -- Sprawdzenie, czy udało się wczytać activation_output
+    print(red .. "Error when opening the file activation_output.conf" .. reset)
+end
+
+if activation_output == "gelu" or activation_output == "GELU" then
+    function activation_output(x)
+        return 0.5
+            * x
+            * (
+                1
+                + (math.exp(2 * (math.sqrt(2 / math.pi) * (x + 0.044715 * x * x * x))) - 1)
+                    / (math.exp(2 * (math.sqrt(2 / math.pi) * (x + 0.044715 * x * x * x))) + 1)
+            )
+    end
+elseif activation_output == "relu" or activation_output == "ReLU" then
+    function activation_output(x)
+        if x > 0 then
+            return x
+        else
+            return 0
+        end
+    end
+elseif activation_output == "sigmoid" or activation_output == "Sigmoid" then
+    function activation_output(x)
+        return 1 / (1 + math.exp(-x))
+    end
+elseif activation_output == "swish" or activation_output == "Swish" then
+    function activation_output(x)
+        return x / (1 + math.exp(-x))
+    end
+elseif activation_output == "tanh" or activation_output == "Tanh" then
+    function activation_output(x)
+        return (math.exp(x) - math.exp(-x)) / (math.exp(x) + math.exp(-x))
+    end
+else
+    print(red .. "Invalid value in activation_output.conf" .. reset)
 end
 
 -- Otwieranie pliku do odczytu
@@ -434,7 +579,7 @@ if hidden_layers == 2 then
                 for k = 1, input_size do
                     hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
                 end
-                hidden1_input[j] = sigmoid(hidden1_input[j])
+                hidden1_input[j] = activation_input(hidden1_input[j])
             end
 
             for j = 1, hidden2_size do
@@ -442,18 +587,18 @@ if hidden_layers == 2 then
                 for k = 1, hidden1_size do
                     hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
                 end
-                hidden2_input[j] = sigmoid(hidden2_input[j])
+                hidden2_input[j] = activation_hd(hidden2_input[j])
             end
 
             for j = 1, hidden2_size do
-                hidden2_output[j] = sigmoid(hidden2_input[j])
+                hidden2_output[j] = activation_hd(hidden2_input[j])
             end
 
             final_input[1] = 0
             for j = 1, hidden2_size do
                 final_input[1] = final_input[1] + hidden2_output[j] * weights_hidden2_output[j]
             end
-            final_output = sigmoid(final_input[1])
+            final_output = activation_output(final_input[1])
 
             -- Obliczenie błędu
             error = y_train[i] - final_output
@@ -511,7 +656,7 @@ if hidden_layers == 2 then
             for k = 1, input_size do
                 hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
             end
-            hidden1_input[j] = sigmoid(hidden1_input[j])
+            hidden1_input[j] = activation_input(hidden1_input[j])
         end
 
         for j = 1, hidden2_size do
@@ -519,18 +664,18 @@ if hidden_layers == 2 then
             for k = 1, hidden1_size do
                 hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
             end
-            hidden2_input[j] = sigmoid(hidden2_input[j])
+            hidden2_input[j] = activation_hd(hidden2_input[j])
         end
 
         for j = 1, hidden2_size do
-            hidden2_output[j] = sigmoid(hidden2_input[j])
+            hidden2_output[j] = activation_hd(hidden2_input[j])
         end
 
         final_input[1] = 0
         for j = 1, hidden2_size do
             final_input[1] = final_input[1] + hidden2_output[j] * weights_hidden2_output[j]
         end
-        final_output = sigmoid(final_input[1])
+        final_output = activation_output(final_input[1])
 
         print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
         print("Predicted output:" .. red, final_output .. reset)
@@ -586,7 +731,7 @@ if hidden_layers == 3 then
                 for k = 1, input_size do
                     hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
                 end
-                hidden1_input[j] = sigmoid(hidden1_input[j])
+                hidden1_input[j] = activation_input(hidden1_input[j])
             end
 
             for j = 1, hidden2_size do
@@ -594,7 +739,7 @@ if hidden_layers == 3 then
                 for k = 1, hidden1_size do
                     hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
                 end
-                hidden2_input[j] = sigmoid(hidden2_input[j])
+                hidden2_input[j] = activation_hd(hidden2_input[j])
             end
 
             for j = 1, hidden3_size do
@@ -602,18 +747,18 @@ if hidden_layers == 3 then
                 for k = 1, hidden2_size do
                     hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
                 end
-                hidden3_input[j] = sigmoid(hidden3_input[j])
+                hidden3_input[j] = activation_hd(hidden3_input[j])
             end
 
             for j = 1, hidden3_size do
-                hidden3_output[j] = sigmoid(hidden3_input[j])
+                hidden3_output[j] = activation_hd(hidden3_input[j])
             end
 
             final_input[1] = 0
             for j = 1, hidden3_size do
                 final_input[1] = final_input[1] + hidden3_output[j] * weights_hidden3_output[j]
             end
-            final_output = sigmoid(final_input[1])
+            final_output = activation_output(final_input[1])
 
             -- Obliczenie błędu
             error = y_train[i] - final_output
@@ -688,7 +833,7 @@ if hidden_layers == 3 then
             for k = 1, input_size do
                 hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
             end
-            hidden1_input[j] = sigmoid(hidden1_input[j])
+            hidden1_input[j] = activation_input(hidden1_input[j])
         end
 
         for j = 1, hidden2_size do
@@ -696,7 +841,7 @@ if hidden_layers == 3 then
             for k = 1, hidden1_size do
                 hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
             end
-            hidden2_input[j] = sigmoid(hidden2_input[j])
+            hidden2_input[j] = activation_hd(hidden2_input[j])
         end
 
         for j = 1, hidden3_size do
@@ -704,18 +849,18 @@ if hidden_layers == 3 then
             for k = 1, hidden2_size do
                 hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
             end
-            hidden3_input[j] = sigmoid(hidden3_input[j])
+            hidden3_input[j] = activation_hd(hidden3_input[j])
         end
 
         for j = 1, hidden3_size do
-            hidden3_output[j] = sigmoid(hidden3_input[j])
+            hidden3_output[j] = activation_hd(hidden3_input[j])
         end
 
         final_input[1] = 0
         for j = 1, hidden3_size do
             final_input[1] = final_input[1] + hidden3_output[j] * weights_hidden3_output[j]
         end
-        final_output = sigmoid(final_input[1])
+        final_output = activation_output(final_input[1])
 
         print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
         print("Predicted output:" .. red, final_output .. reset)
@@ -780,7 +925,7 @@ if hidden_layers == 4 then
                 for k = 1, input_size do
                     hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
                 end
-                hidden1_input[j] = sigmoid(hidden1_input[j])
+                hidden1_input[j] = activation_input(hidden1_input[j])
             end
 
             for j = 1, hidden2_size do
@@ -788,7 +933,7 @@ if hidden_layers == 4 then
                 for k = 1, hidden1_size do
                     hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
                 end
-                hidden2_input[j] = sigmoid(hidden2_input[j])
+                hidden2_input[j] = activation_hd(hidden2_input[j])
             end
 
             for j = 1, hidden3_size do
@@ -796,7 +941,7 @@ if hidden_layers == 4 then
                 for k = 1, hidden2_size do
                     hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
                 end
-                hidden3_input[j] = sigmoid(hidden3_input[j])
+                hidden3_input[j] = activation_hd(hidden3_input[j])
             end
 
             for j = 1, hidden4_size do
@@ -804,18 +949,18 @@ if hidden_layers == 4 then
                 for k = 1, hidden3_size do
                     hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
                 end
-                hidden4_input[j] = sigmoid(hidden4_input[j])
+                hidden4_input[j] = activation_hd(hidden4_input[j])
             end
 
             for j = 1, hidden4_size do
-                hidden4_output[j] = sigmoid(hidden4_input[j])
+                hidden4_output[j] = activation_hd(hidden4_input[j])
             end
 
             final_input[1] = 0
             for j = 1, hidden4_size do
                 final_input[1] = final_input[1] + hidden4_output[j] * weights_hidden4_output[j]
             end
-            final_output = sigmoid(final_input[1])
+            final_output = activation_output(final_input[1])
 
             -- Obliczenie błędu
             error = y_train[i] - final_output
@@ -907,7 +1052,7 @@ if hidden_layers == 4 then
             for k = 1, input_size do
                 hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
             end
-            hidden1_input[j] = sigmoid(hidden1_input[j])
+            hidden1_input[j] = activation_input(hidden1_input[j])
         end
 
         for j = 1, hidden2_size do
@@ -915,7 +1060,7 @@ if hidden_layers == 4 then
             for k = 1, hidden1_size do
                 hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
             end
-            hidden2_input[j] = sigmoid(hidden2_input[j])
+            hidden2_input[j] = activation_hd(hidden2_input[j])
         end
 
         for j = 1, hidden3_size do
@@ -923,7 +1068,7 @@ if hidden_layers == 4 then
             for k = 1, hidden2_size do
                 hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
             end
-            hidden3_input[j] = sigmoid(hidden3_input[j])
+            hidden3_input[j] = activation_hd(hidden3_input[j])
         end
 
         for j = 1, hidden4_size do
@@ -931,18 +1076,18 @@ if hidden_layers == 4 then
             for k = 1, hidden3_size do
                 hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
             end
-            hidden4_input[j] = sigmoid(hidden4_input[j])
+            hidden4_input[j] = activation_hd(hidden4_input[j])
         end
 
         for j = 1, hidden4_size do
-            hidden4_output[j] = sigmoid(hidden4_input[j])
+            hidden4_output[j] = activation_hd(hidden4_input[j])
         end
 
         final_input[1] = 0
         for j = 1, hidden4_size do
             final_input[1] = final_input[1] + hidden4_output[j] * weights_hidden4_output[j]
         end
-        final_output = sigmoid(final_input[1])
+        final_output = activation_output(final_input[1])
 
         print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
         print("Predicted output:" .. red, final_output .. reset)
@@ -1016,7 +1161,7 @@ if hidden_layers == 5 then
                 for k = 1, input_size do
                     hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
                 end
-                hidden1_input[j] = sigmoid(hidden1_input[j])
+                hidden1_input[j] = activation_input(hidden1_input[j])
             end
 
             for j = 1, hidden2_size do
@@ -1024,7 +1169,7 @@ if hidden_layers == 5 then
                 for k = 1, hidden1_size do
                     hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
                 end
-                hidden2_input[j] = sigmoid(hidden2_input[j])
+                hidden2_input[j] = activation_hd(hidden2_input[j])
             end
 
             for j = 1, hidden3_size do
@@ -1032,7 +1177,7 @@ if hidden_layers == 5 then
                 for k = 1, hidden2_size do
                     hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
                 end
-                hidden3_input[j] = sigmoid(hidden3_input[j])
+                hidden3_input[j] = activation_hd(hidden3_input[j])
             end
 
             for j = 1, hidden4_size do
@@ -1040,7 +1185,7 @@ if hidden_layers == 5 then
                 for k = 1, hidden3_size do
                     hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
                 end
-                hidden4_input[j] = sigmoid(hidden4_input[j])
+                hidden4_input[j] = activation_hd(hidden4_input[j])
             end
 
             for j = 1, hidden5_size do
@@ -1048,18 +1193,18 @@ if hidden_layers == 5 then
                 for k = 1, hidden4_size do
                     hidden5_input[j] = hidden5_input[j] + hidden4_input[k] * weights_hidden4_hidden5[k][j]
                 end
-                hidden5_input[j] = sigmoid(hidden5_input[j])
+                hidden5_input[j] = activation_hd(hidden5_input[j])
             end
 
             for j = 1, hidden5_size do
-                hidden5_output[j] = sigmoid(hidden5_input[j])
+                hidden5_output[j] = activation_hd(hidden5_input[j])
             end
 
             final_input[1] = 0
             for j = 1, hidden5_size do
                 final_input[1] = final_input[1] + hidden5_output[j] * weights_hidden5_output[j]
             end
-            final_output = sigmoid(final_input[1])
+            final_output = activation_output(final_input[1])
 
             -- Obliczenie błędu
             error = y_train[i] - final_output
@@ -1168,7 +1313,7 @@ if hidden_layers == 5 then
             for k = 1, input_size do
                 hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
             end
-            hidden1_input[j] = sigmoid(hidden1_input[j])
+            hidden1_input[j] = activation_input(hidden1_input[j])
         end
 
         for j = 1, hidden2_size do
@@ -1176,7 +1321,7 @@ if hidden_layers == 5 then
             for k = 1, hidden1_size do
                 hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
             end
-            hidden2_input[j] = sigmoid(hidden2_input[j])
+            hidden2_input[j] = activation_hd(hidden2_input[j])
         end
 
         for j = 1, hidden3_size do
@@ -1184,7 +1329,7 @@ if hidden_layers == 5 then
             for k = 1, hidden2_size do
                 hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
             end
-            hidden3_input[j] = sigmoid(hidden3_input[j])
+            hidden3_input[j] = activation_hd(hidden3_input[j])
         end
 
         for j = 1, hidden4_size do
@@ -1192,7 +1337,7 @@ if hidden_layers == 5 then
             for k = 1, hidden3_size do
                 hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
             end
-            hidden4_input[j] = sigmoid(hidden4_input[j])
+            hidden4_input[j] = activation_hd(hidden4_input[j])
         end
 
         for j = 1, hidden5_size do
@@ -1200,18 +1345,18 @@ if hidden_layers == 5 then
             for k = 1, hidden4_size do
                 hidden5_input[j] = hidden5_input[j] + hidden4_input[k] * weights_hidden4_hidden5[k][j]
             end
-            hidden5_input[j] = sigmoid(hidden5_input[j])
+            hidden5_input[j] = activation_hd(hidden5_input[j])
         end
 
         for j = 1, hidden5_size do
-            hidden5_output[j] = sigmoid(hidden5_input[j])
+            hidden5_output[j] = activation_hd(hidden5_input[j])
         end
 
         final_input[1] = 0
         for j = 1, hidden5_size do
             final_input[1] = final_input[1] + hidden5_output[j] * weights_hidden5_output[j]
         end
-        final_output = sigmoid(final_input[1])
+        final_output = activation_output(final_input[1])
 
         print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
         print("Predicted output:" .. red, final_output .. reset)
