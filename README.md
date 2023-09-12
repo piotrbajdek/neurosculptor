@@ -14,7 +14,7 @@ Neurosculptor v0.2.0 has been verified to work properly with Lua 5.4.4 and LuaJI
 
 Available activation functions include GELU, ReLU, Sigmoid, Swish, and Tanh.
 
-`activation_input.conf` - Set the activation function for the input layer
+`activation_input.conf` - Set the activation function for the input layer.
 
 `activation_hidden.conf` - Set the activation function for the hidden layers.
 
