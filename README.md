@@ -38,6 +38,8 @@ Neurosculptor v0.3.0 has been verified to work properly with Lua 5.4.4 and LuaJI
 
 `hidden_5_size.conf` - Configure the number of neurons in the fifth hidden layer.
 
+`hidden_6_size.conf` - Configure the number of neurons in the sixth hidden layer.
+
 `train_file_x.csv` - In the simplest scenario, when using the Sigmoid activation function, this file should contain a binary matrix consisting of the numbers 0 and 1.
 
 `train_file_y.txt` - In the simplest scenario, when using the Sigmoid activation function, this file should contain a single column of the numbers 0 and 1, corresponding to the columns in `train_file_x.csv`.
