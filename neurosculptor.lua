@@ -39,7 +39,7 @@ local grey = "\27[38;5;246m"
 local reset = "\27[0m"
 
 print("Lua-Based Deep Learning Program")
-print(grey .. "neurosculptor" .. reset .. " v0.2.1 12.09.2023")
+print(grey .. "neurosculptor" .. reset .. " v0.3.0 13.09.2023")
 print("Copyright © 2023-present, Piotr Bajdek")
 print("")
 
@@ -73,6 +73,10 @@ elseif activation_input == "gelu" or activation_input == "GELU" then
                 + (math.exp(2 * (math.sqrt(2 / math.pi) * (x + 0.044715 * x * x * x))) - 1)
                     / (math.exp(2 * (math.sqrt(2 / math.pi) * (x + 0.044715 * x * x * x))) + 1)
             )
+    end
+elseif activation_input == "identity" or activation_input == "Identity" then
+    function activation_input(x)
+        return x
     end
 elseif activation_input == "relu" or activation_input == "ReLU" then
     function activation_input(x)
@@ -139,6 +143,10 @@ elseif activation_hd == "gelu" or activation_hd == "GELU" then
                     / (math.exp(2 * (math.sqrt(2 / math.pi) * (x + 0.044715 * x * x * x))) + 1)
             )
     end
+elseif activation_hd == "identity" or activation_hd == "Identity" then
+    function activation_hd(x)
+        return x
+    end
 elseif activation_hd == "relu" or activation_hd == "ReLU" then
     function activation_hd(x)
         if x > 0 then
@@ -204,6 +212,10 @@ elseif activation_output == "gelu" or activation_output == "GELU" then
                     / (math.exp(2 * (math.sqrt(2 / math.pi) * (x + 0.044715 * x * x * x))) + 1)
             )
     end
+elseif activation_output == "identity" or activation_output == "Identity" then
+    function activation_output(x)
+        return x
+    end
 elseif activation_output == "relu" or activation_output == "ReLU" then
     function activation_output(x)
         if x > 0 then
@@ -238,25 +250,42 @@ else
     print(red .. "Invalid value in activation_output.conf" .. reset)
 end
 
--- Otwieranie pliku do odczytu
-local file = io.open("learning_rate.conf", "r")
--- Inicjalizacja zmiennej na learning_rate
-local learning_rate = nil
--- Sprawdzenie, czy plik został otwarty poprawnie
+local file = io.open("optimisation.conf", "r")
 if file then
-    -- Odczytanie zawartości pliku
-    local content = file:read("*all")
-    -- Konwersja zawartości na liczbę (jeśli to możliwe)
-    learning_rate = tonumber(content)
-    file:close() -- Zamykanie pliku
+    -- Wczytanie jednego słowa ze strumienia
+    optimisation = file:read("*a")
+    -- Zamknięcie pliku
+    file:close()
+    -- Usunięcie białych znaków na początku i końcu słowa
+    optimisation = optimisation:match("^%s*(.-)%s*$")
+    -- Wyświetlenie wczytanego słowa
+    print("Loaded " .. grey .. "optimisation.conf" .. reset .. ":" .. red, optimisation .. reset)
 else
-    print(red .. "Error when opening the file learning_rate.conf" .. reset)
+    -- Sprawdzenie, czy udało się wczytać optimisation
+    print(red .. "Error when opening the file optimisation.conf" .. reset)
 end
--- Sprawdzenie, czy udało się wczytać learning_rate
-if learning_rate then
-    print("Loaded " .. grey .. "learning_rate.conf" .. reset .. ":" .. red, learning_rate .. reset)
-else
-    print(red .. "Unable to read learning_rate from learning_rate.conf" .. reset)
+
+if optimisation == "sgd" or optimisation == "SGD" then
+    -- Otwieranie pliku do odczytu
+    local file = io.open("learning_rate.conf", "r")
+    -- Inicjalizacja zmiennej na learning_rate
+    learning_rate = nil
+    -- Sprawdzenie, czy plik został otwarty poprawnie
+    if file then
+        -- Odczytanie zawartości pliku
+        local content = file:read("*all")
+        -- Konwersja zawartości na liczbę (jeśli to możliwe)
+        learning_rate = tonumber(content)
+        file:close() -- Zamykanie pliku
+    else
+        print(red .. "Error when opening the file learning_rate.conf" .. reset)
+    end
+    -- Sprawdzenie, czy udało się wczytać learning_rate
+    if learning_rate then
+        print("Loaded " .. grey .. "learning_rate.conf" .. reset .. ":" .. red, learning_rate .. reset)
+    else
+        print(red .. "Unable to read learning_rate from learning_rate.conf" .. reset)
+    end
 end
 
 -- Otwieranie pliku do odczytu
@@ -300,50 +329,54 @@ if hidden_layers then
 else
     print(red .. "Unable to read hidden_layers from hidden_layers.conf" .. reset)
 end
-if hidden_layers <= 1 or hidden_layers >= 6 then
+if hidden_layers <= 1 or hidden_layers >= 7 then
     print(red .. "Invalid value in hidden_layers.conf" .. reset)
 end
 
--- Otwieranie pliku do odczytu
-local file = io.open("hidden_1_size.conf", "r")
--- Inicjalizacja zmiennej na iterations
-local hidden1_size = nil
--- Sprawdzenie, czy plik został otwarty poprawnie
-if file then
-    -- Odczytanie zawartości pliku
-    local content = file:read("*all")
-    -- Konwersja zawartości na liczbę (jeśli to możliwe)
-    hidden1_size = tonumber(content)
-    file:close() -- Zamykanie pliku
-else
-    print(red .. "Error when opening the file hidden_1_size.conf" .. reset)
-end
--- Sprawdzenie, czy udało się wczytać iterations
-if hidden1_size then
-    print("Loaded " .. grey .. "hidden_1_size.conf" .. reset .. ":" .. red, hidden1_size .. reset)
-else
-    print(red .. "Unable to read hidden1_size from hidden_1_size.conf" .. reset)
+if hidden_layers >= 1 then
+    -- Otwieranie pliku do odczytu
+    local file = io.open("hidden_1_size.conf", "r")
+    -- Inicjalizacja zmiennej na iterations
+    hidden1_size = nil
+    -- Sprawdzenie, czy plik został otwarty poprawnie
+    if file then
+        -- Odczytanie zawartości pliku
+        local content = file:read("*all")
+        -- Konwersja zawartości na liczbę (jeśli to możliwe)
+        hidden1_size = tonumber(content)
+        file:close() -- Zamykanie pliku
+    else
+        print(red .. "Error when opening the file hidden_1_size.conf" .. reset)
+    end
+    -- Sprawdzenie, czy udało się wczytać iterations
+    if hidden1_size then
+        print("Loaded " .. grey .. "hidden_1_size.conf" .. reset .. ":" .. red, hidden1_size .. reset)
+    else
+        print(red .. "Unable to read hidden1_size from hidden_1_size.conf" .. reset)
+    end
 end
 
--- Otwieranie pliku do odczytu
-local file = io.open("hidden_2_size.conf", "r")
--- Inicjalizacja zmiennej na iterations
-local hidden2_size = nil
--- Sprawdzenie, czy plik został otwarty poprawnie
-if file then
-    -- Odczytanie zawartości pliku
-    local content = file:read("*all")
-    -- Konwersja zawartości na liczbę (jeśli to możliwe)
-    hidden2_size = tonumber(content)
-    file:close() -- Zamykanie pliku
-else
-    print(red .. "Error when opening the file hidden_2_size.conf" .. reset)
-end
--- Sprawdzenie, czy udało się wczytać iterations
-if hidden2_size then
-    print("Loaded " .. grey .. "hidden_2_size.conf" .. reset .. ":" .. red, hidden2_size .. reset)
-else
-    print(red .. "Unable to read hidden2_size from hidden_2_size.conf" .. reset)
+if hidden_layers >= 2 then
+    -- Otwieranie pliku do odczytu
+    local file = io.open("hidden_2_size.conf", "r")
+    -- Inicjalizacja zmiennej na iterations
+    hidden2_size = nil
+    -- Sprawdzenie, czy plik został otwarty poprawnie
+    if file then
+        -- Odczytanie zawartości pliku
+        local content = file:read("*all")
+        -- Konwersja zawartości na liczbę (jeśli to możliwe)
+        hidden2_size = tonumber(content)
+        file:close() -- Zamykanie pliku
+    else
+        print(red .. "Error when opening the file hidden_2_size.conf" .. reset)
+    end
+    -- Sprawdzenie, czy udało się wczytać iterations
+    if hidden2_size then
+        print("Loaded " .. grey .. "hidden_2_size.conf" .. reset .. ":" .. red, hidden2_size .. reset)
+    else
+        print(red .. "Unable to read hidden2_size from hidden_2_size.conf" .. reset)
+    end
 end
 
 if hidden_layers >= 3 then
@@ -392,7 +425,7 @@ if hidden_layers >= 4 then
     end
 end
 
-if hidden_layers == 5 then
+if hidden_layers >= 5 then
     -- Otwieranie pliku do odczytu
     local file = io.open("hidden_5_size.conf", "r")
     -- Inicjalizacja zmiennej na iterations
@@ -412,6 +445,29 @@ if hidden_layers == 5 then
         print("Loaded " .. grey .. "hidden_5_size.conf" .. reset .. ":" .. red, hidden5_size .. reset)
     else
         print(red .. "Unable to read hidden5_size from hidden_5_size.conf" .. reset)
+    end
+end
+
+if hidden_layers >= 6 then
+    -- Otwieranie pliku do odczytu
+    local file = io.open("hidden_6_size.conf", "r")
+    -- Inicjalizacja zmiennej na iterations
+    hidden6_size = nil
+    -- Sprawdzenie, czy plik został otwarty poprawnie
+    if file then
+        -- Odczytanie zawartości pliku
+        local content = file:read("*all")
+        -- Konwersja zawartości na liczbę (jeśli to możliwe)
+        hidden6_size = tonumber(content)
+        file:close() -- Zamykanie pliku
+    else
+        print(red .. "Error when opening the file hidden_6_size.conf" .. reset)
+    end
+    -- Sprawdzenie, czy udało się wczytać iterations
+    if hidden6_size then
+        print("Loaded " .. grey .. "hidden_6_size.conf" .. reset .. ":" .. red, hidden6_size .. reset)
+    else
+        print(red .. "Unable to read hidden6_size from hidden_6_size.conf" .. reset)
     end
 end
 
@@ -510,7 +566,17 @@ else
 end
 
 output_size = 1
-if hidden_layers == 5 then
+if hidden_layers == 6 then
+    neurons = input_size
+        + hidden1_size
+        + hidden2_size
+        + hidden3_size
+        + hidden4_size
+        + hidden5_size
+        + hidden6_size
+        + output_size
+    print("Configured hidden neurons:" .. red, neurons - input_size - output_size .. reset)
+elseif hidden_layers == 5 then
     neurons = input_size + hidden1_size + hidden2_size + hidden3_size + hidden4_size + hidden5_size + output_size
     print("Configured hidden neurons:" .. red, neurons - input_size - output_size .. reset)
 elseif hidden_layers == 4 then
@@ -527,7 +593,16 @@ print("Configured output neurons:   " .. red, output_size .. reset)
 print("Configured total layers:" .. red, hidden_layers + 2 .. reset)
 print("Configured total neurons:" .. red, neurons .. reset)
 
-if hidden_layers == 5 then
+if hidden_layers == 6 then
+    parameters = (input_size * hidden1_size)
+        + (hidden1_size * hidden2_size)
+        + (hidden2_size * hidden3_size)
+        + (hidden3_size * hidden4_size)
+        + (hidden4_size * hidden5_size)
+        + (hidden5_size * hidden6_size)
+        + (hidden6_size * output_size)
+    print("Configured total connections:" .. red, parameters .. reset)
+elseif hidden_layers == 5 then
     parameters = (input_size * hidden1_size)
         + (hidden1_size * hidden2_size)
         + (hidden2_size * hidden3_size)
@@ -553,7 +628,16 @@ elseif hidden_layers == 2 then
     print("Configured total connections:" .. red, parameters .. reset)
 end
 
-if hidden_layers == 5 then
+if hidden_layers == 6 then
+    parameters = (input_size * hidden1_size + hidden1_size)
+        + (hidden1_size * hidden2_size + hidden2_size)
+        + (hidden2_size * hidden3_size + hidden3_size)
+        + (hidden3_size * hidden4_size + hidden4_size)
+        + (hidden4_size * hidden5_size + hidden5_size)
+        + (hidden5_size * hidden6_size + hidden6_size)
+        + (hidden6_size * output_size + output_size)
+    print("Configured total parameters:" .. red, parameters .. reset)
+elseif hidden_layers == 5 then
     parameters = (input_size * hidden1_size + hidden1_size)
         + (hidden1_size * hidden2_size + hidden2_size)
         + (hidden2_size * hidden3_size + hidden3_size)
@@ -584,36 +668,115 @@ end
 -- Inicjalizacja wag
 math.randomseed(os.time())
 
-if hidden_layers == 2 then
-    weights_input_hidden1 = {}
-    weights_hidden1_hidden2 = {}
-    weights_hidden2_output = {}
+if optimisation == "sgd" or optimisation == "SGD" then
+    if hidden_layers == 2 then
+        weights_input_hidden1 = {}
+        weights_hidden1_hidden2 = {}
+        weights_hidden2_output = {}
 
-    for i = 1, input_size do
-        weights_input_hidden1[i] = {}
-        for j = 1, hidden1_size do
-            weights_input_hidden1[i][j] = math.random()
+        for i = 1, input_size do
+            weights_input_hidden1[i] = {}
+            for j = 1, hidden1_size do
+                weights_input_hidden1[i][j] = math.random()
+            end
         end
-    end
 
-    for i = 1, hidden1_size do
-        weights_hidden1_hidden2[i] = {}
-        for j = 1, hidden2_size do
-            weights_hidden1_hidden2[i][j] = math.random()
+        for i = 1, hidden1_size do
+            weights_hidden1_hidden2[i] = {}
+            for j = 1, hidden2_size do
+                weights_hidden1_hidden2[i][j] = math.random()
+            end
         end
-    end
 
-    for i = 1, hidden2_size do
-        weights_hidden2_output[i] = math.random()
-    end
+        for i = 1, hidden2_size do
+            weights_hidden2_output[i] = math.random()
+        end
 
-    -- Uczenie sieci
+        -- Uczenie sieci
 
-    epochs = iterations
+        epochs = iterations
 
-    for epoch = 1, epochs do
-        for i = 1, #x_train do
-            -- Forward pass
+        for epoch = 1, epochs do
+            for i = 1, #x_train do
+                -- Forward pass
+                hidden1_input = {}
+                hidden2_input = {}
+                hidden2_output = {}
+                final_input = {}
+
+                for j = 1, hidden1_size do
+                    hidden1_input[j] = 0
+                    for k = 1, input_size do
+                        hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    end
+                    hidden1_input[j] = activation_input(hidden1_input[j])
+                end
+
+                for j = 1, hidden2_size do
+                    hidden2_input[j] = 0
+                    for k = 1, hidden1_size do
+                        hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                    end
+                    hidden2_input[j] = activation_hd(hidden2_input[j])
+                end
+
+                for j = 1, hidden2_size do
+                    hidden2_output[j] = activation_hd(hidden2_input[j])
+                end
+
+                final_input[1] = 0
+                for j = 1, hidden2_size do
+                    final_input[1] = final_input[1] + hidden2_output[j] * weights_hidden2_output[j]
+                end
+                final_output = activation_output(final_input[1])
+
+                -- Obliczenie błędu
+                error = y_train[i] - final_output
+
+                -- Backpropagation
+                delta_output = error * final_output * (1 - final_output)
+
+                delta_hidden2 = {}
+                for j = 1, hidden2_size do
+                    delta_hidden2[j] = delta_output * weights_hidden2_output[j] * (1 - hidden2_output[j])
+                end
+
+                delta_hidden1 = {}
+                for j = 1, hidden1_size do
+                    delta_hidden1[j] = 0
+                    for k = 1, hidden2_size do
+                        delta_hidden1[j] = delta_hidden1[j]
+                            + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
+                    end
+                end
+
+                -- Aktualizacja wag
+                for j = 1, hidden2_size do
+                    weights_hidden2_output[j] = weights_hidden2_output[j]
+                        + learning_rate * delta_output * hidden2_output[j]
+                end
+
+                for j = 1, hidden1_size do
+                    for k = 1, hidden2_size do
+                        weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
+                            + learning_rate * delta_hidden2[k] * hidden1_input[j]
+                    end
+                end
+
+                for j = 1, input_size do
+                    for k = 1, hidden1_size do
+                        weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
+                            + learning_rate * delta_hidden1[k] * x_train[i][j]
+                    end
+                end
+            end
+        end
+
+        -- Testowanie sieci
+
+        for i = 1, #x_test do
+            print("")
+
             hidden1_input = {}
             hidden2_input = {}
             hidden2_output = {}
@@ -622,7 +785,7 @@ if hidden_layers == 2 then
             for j = 1, hidden1_size do
                 hidden1_input[j] = 0
                 for k = 1, input_size do
-                    hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
                 end
                 hidden1_input[j] = activation_input(hidden1_input[j])
             end
@@ -645,126 +808,152 @@ if hidden_layers == 2 then
             end
             final_output = activation_output(final_input[1])
 
-            -- Obliczenie błędu
-            error = y_train[i] - final_output
+            print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
+            print("Predicted output:" .. red, final_output .. reset)
+        end
+    end
 
-            -- Backpropagation
-            delta_output = error * final_output * (1 - final_output)
+    if hidden_layers == 3 then
+        weights_input_hidden1 = {}
+        weights_hidden1_hidden2 = {}
+        weights_hidden2_hidden3 = {}
+        weights_hidden3_output = {}
 
-            delta_hidden2 = {}
-            for j = 1, hidden2_size do
-                delta_hidden2[j] = delta_output * weights_hidden2_output[j] * (1 - hidden2_output[j])
-            end
-
-            delta_hidden1 = {}
+        for i = 1, input_size do
+            weights_input_hidden1[i] = {}
             for j = 1, hidden1_size do
-                delta_hidden1[j] = 0
-                for k = 1, hidden2_size do
-                    delta_hidden1[j] = delta_hidden1[j]
-                        + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
-                end
+                weights_input_hidden1[i][j] = math.random()
             end
+        end
 
-            -- Aktualizacja wag
+        for i = 1, hidden1_size do
+            weights_hidden1_hidden2[i] = {}
             for j = 1, hidden2_size do
-                weights_hidden2_output[j] = weights_hidden2_output[j] + learning_rate * delta_output * hidden2_output[j]
+                weights_hidden1_hidden2[i][j] = math.random()
             end
+        end
 
-            for j = 1, hidden1_size do
-                for k = 1, hidden2_size do
-                    weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
-                        + learning_rate * delta_hidden2[k] * hidden1_input[j]
+        for i = 1, hidden2_size do
+            weights_hidden2_hidden3[i] = {}
+            for j = 1, hidden3_size do
+                weights_hidden2_hidden3[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden3_size do
+            weights_hidden3_output[i] = math.random()
+        end
+
+        -- Uczenie sieci
+
+        epochs = iterations
+
+        for epoch = 1, epochs do
+            for i = 1, #x_train do
+                -- Forward pass
+                hidden1_input = {}
+                hidden2_input = {}
+                hidden3_input = {}
+                hidden3_output = {}
+                final_input = {}
+
+                for j = 1, hidden1_size do
+                    hidden1_input[j] = 0
+                    for k = 1, input_size do
+                        hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    end
+                    hidden1_input[j] = activation_input(hidden1_input[j])
+                end
+
+                for j = 1, hidden2_size do
+                    hidden2_input[j] = 0
+                    for k = 1, hidden1_size do
+                        hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                    end
+                    hidden2_input[j] = activation_hd(hidden2_input[j])
+                end
+
+                for j = 1, hidden3_size do
+                    hidden3_input[j] = 0
+                    for k = 1, hidden2_size do
+                        hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+                    end
+                    hidden3_input[j] = activation_hd(hidden3_input[j])
+                end
+
+                for j = 1, hidden3_size do
+                    hidden3_output[j] = activation_hd(hidden3_input[j])
+                end
+
+                final_input[1] = 0
+                for j = 1, hidden3_size do
+                    final_input[1] = final_input[1] + hidden3_output[j] * weights_hidden3_output[j]
+                end
+                final_output = activation_output(final_input[1])
+
+                -- Obliczenie błędu
+                error = y_train[i] - final_output
+
+                -- Backpropagation
+                delta_output = error * final_output * (1 - final_output)
+
+                delta_hidden3 = {}
+                for j = 1, hidden3_size do
+                    delta_hidden3[j] = delta_output * weights_hidden3_output[j] * (1 - hidden3_output[j])
+                end
+
+                delta_hidden2 = {}
+                for j = 1, hidden2_size do
+                    delta_hidden2[j] = 0
+                    for k = 1, hidden3_size do
+                        delta_hidden2[j] = delta_hidden2[j]
+                            + delta_hidden3[k] * weights_hidden2_hidden3[j][k] * (1 - hidden2_input[j])
+                    end
+                end
+
+                delta_hidden1 = {}
+                for j = 1, hidden1_size do
+                    delta_hidden1[j] = 0
+                    for k = 1, hidden2_size do
+                        delta_hidden1[j] = delta_hidden1[j]
+                            + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
+                    end
+                end
+
+                -- Aktualizacja wag
+                for j = 1, hidden3_size do
+                    weights_hidden3_output[j] = weights_hidden3_output[j]
+                        + learning_rate * delta_output * hidden3_output[j]
+                end
+
+                for j = 1, hidden2_size do
+                    for k = 1, hidden3_size do
+                        weights_hidden2_hidden3[j][k] = weights_hidden2_hidden3[j][k]
+                            + learning_rate * delta_hidden3[k] * hidden2_input[j]
+                    end
+                end
+
+                for j = 1, hidden1_size do
+                    for k = 1, hidden2_size do
+                        weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
+                            + learning_rate * delta_hidden2[k] * hidden1_input[j]
+                    end
+                end
+
+                for j = 1, input_size do
+                    for k = 1, hidden1_size do
+                        weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
+                            + learning_rate * delta_hidden1[k] * x_train[i][j]
+                    end
                 end
             end
-
-            for j = 1, input_size do
-                for k = 1, hidden1_size do
-                    weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
-                        + learning_rate * delta_hidden1[k] * x_train[i][j]
-                end
-            end
-        end
-    end
-
-    -- Testowanie sieci
-
-    for i = 1, #x_test do
-        print("")
-
-        hidden1_input = {}
-        hidden2_input = {}
-        hidden2_output = {}
-        final_input = {}
-
-        for j = 1, hidden1_size do
-            hidden1_input[j] = 0
-            for k = 1, input_size do
-                hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
-            end
-            hidden1_input[j] = activation_input(hidden1_input[j])
         end
 
-        for j = 1, hidden2_size do
-            hidden2_input[j] = 0
-            for k = 1, hidden1_size do
-                hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
-            end
-            hidden2_input[j] = activation_hd(hidden2_input[j])
-        end
+        -- Testowanie sieci
 
-        for j = 1, hidden2_size do
-            hidden2_output[j] = activation_hd(hidden2_input[j])
-        end
+        for i = 1, #x_test do
+            print("")
 
-        final_input[1] = 0
-        for j = 1, hidden2_size do
-            final_input[1] = final_input[1] + hidden2_output[j] * weights_hidden2_output[j]
-        end
-        final_output = activation_output(final_input[1])
-
-        print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
-        print("Predicted output:" .. red, final_output .. reset)
-    end
-end
-
-if hidden_layers == 3 then
-    weights_input_hidden1 = {}
-    weights_hidden1_hidden2 = {}
-    weights_hidden2_hidden3 = {}
-    weights_hidden3_output = {}
-
-    for i = 1, input_size do
-        weights_input_hidden1[i] = {}
-        for j = 1, hidden1_size do
-            weights_input_hidden1[i][j] = math.random()
-        end
-    end
-
-    for i = 1, hidden1_size do
-        weights_hidden1_hidden2[i] = {}
-        for j = 1, hidden2_size do
-            weights_hidden1_hidden2[i][j] = math.random()
-        end
-    end
-
-    for i = 1, hidden2_size do
-        weights_hidden2_hidden3[i] = {}
-        for j = 1, hidden3_size do
-            weights_hidden2_hidden3[i][j] = math.random()
-        end
-    end
-
-    for i = 1, hidden3_size do
-        weights_hidden3_output[i] = math.random()
-    end
-
-    -- Uczenie sieci
-
-    epochs = iterations
-
-    for epoch = 1, epochs do
-        for i = 1, #x_train do
-            -- Forward pass
             hidden1_input = {}
             hidden2_input = {}
             hidden3_input = {}
@@ -774,7 +963,7 @@ if hidden_layers == 3 then
             for j = 1, hidden1_size do
                 hidden1_input[j] = 0
                 for k = 1, input_size do
-                    hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
                 end
                 hidden1_input[j] = activation_input(hidden1_input[j])
             end
@@ -805,159 +994,185 @@ if hidden_layers == 3 then
             end
             final_output = activation_output(final_input[1])
 
-            -- Obliczenie błędu
-            error = y_train[i] - final_output
+            print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
+            print("Predicted output:" .. red, final_output .. reset)
+        end
+    end
 
-            -- Backpropagation
-            delta_output = error * final_output * (1 - final_output)
+    if hidden_layers == 4 then
+        weights_input_hidden1 = {}
+        weights_hidden1_hidden2 = {}
+        weights_hidden2_hidden3 = {}
+        weights_hidden3_hidden4 = {}
+        weights_hidden4_output = {}
 
-            delta_hidden3 = {}
-            for j = 1, hidden3_size do
-                delta_hidden3[j] = delta_output * weights_hidden3_output[j] * (1 - hidden3_output[j])
-            end
-
-            delta_hidden2 = {}
-            for j = 1, hidden2_size do
-                delta_hidden2[j] = 0
-                for k = 1, hidden3_size do
-                    delta_hidden2[j] = delta_hidden2[j]
-                        + delta_hidden3[k] * weights_hidden2_hidden3[j][k] * (1 - hidden2_input[j])
-                end
-            end
-
-            delta_hidden1 = {}
+        for i = 1, input_size do
+            weights_input_hidden1[i] = {}
             for j = 1, hidden1_size do
-                delta_hidden1[j] = 0
-                for k = 1, hidden2_size do
-                    delta_hidden1[j] = delta_hidden1[j]
-                        + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
-                end
+                weights_input_hidden1[i][j] = math.random()
             end
+        end
 
-            -- Aktualizacja wag
-            for j = 1, hidden3_size do
-                weights_hidden3_output[j] = weights_hidden3_output[j] + learning_rate * delta_output * hidden3_output[j]
-            end
-
+        for i = 1, hidden1_size do
+            weights_hidden1_hidden2[i] = {}
             for j = 1, hidden2_size do
-                for k = 1, hidden3_size do
-                    weights_hidden2_hidden3[j][k] = weights_hidden2_hidden3[j][k]
-                        + learning_rate * delta_hidden3[k] * hidden2_input[j]
+                weights_hidden1_hidden2[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden2_size do
+            weights_hidden2_hidden3[i] = {}
+            for j = 1, hidden3_size do
+                weights_hidden2_hidden3[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden3_size do
+            weights_hidden3_hidden4[i] = {}
+            for j = 1, hidden4_size do
+                weights_hidden3_hidden4[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden4_size do
+            weights_hidden4_output[i] = math.random()
+        end
+
+        -- Uczenie sieci
+
+        epochs = iterations
+
+        for epoch = 1, epochs do
+            for i = 1, #x_train do
+                -- Forward pass
+                hidden1_input = {}
+                hidden2_input = {}
+                hidden3_input = {}
+                hidden4_input = {}
+                hidden4_output = {}
+                final_input = {}
+
+                for j = 1, hidden1_size do
+                    hidden1_input[j] = 0
+                    for k = 1, input_size do
+                        hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    end
+                    hidden1_input[j] = activation_input(hidden1_input[j])
+                end
+
+                for j = 1, hidden2_size do
+                    hidden2_input[j] = 0
+                    for k = 1, hidden1_size do
+                        hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                    end
+                    hidden2_input[j] = activation_hd(hidden2_input[j])
+                end
+
+                for j = 1, hidden3_size do
+                    hidden3_input[j] = 0
+                    for k = 1, hidden2_size do
+                        hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+                    end
+                    hidden3_input[j] = activation_hd(hidden3_input[j])
+                end
+
+                for j = 1, hidden4_size do
+                    hidden4_input[j] = 0
+                    for k = 1, hidden3_size do
+                        hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
+                    end
+                    hidden4_input[j] = activation_hd(hidden4_input[j])
+                end
+
+                for j = 1, hidden4_size do
+                    hidden4_output[j] = activation_hd(hidden4_input[j])
+                end
+
+                final_input[1] = 0
+                for j = 1, hidden4_size do
+                    final_input[1] = final_input[1] + hidden4_output[j] * weights_hidden4_output[j]
+                end
+                final_output = activation_output(final_input[1])
+
+                -- Obliczenie błędu
+                error = y_train[i] - final_output
+
+                -- Backpropagation
+                delta_output = error * final_output * (1 - final_output)
+
+                delta_hidden4 = {}
+                for j = 1, hidden4_size do
+                    delta_hidden4[j] = delta_output * weights_hidden4_output[j] * (1 - hidden4_output[j])
+                end
+
+                delta_hidden3 = {}
+                for j = 1, hidden3_size do
+                    delta_hidden3[j] = 0
+                    for k = 1, hidden4_size do
+                        delta_hidden3[j] = delta_hidden3[j]
+                            + delta_hidden4[k] * weights_hidden3_hidden4[j][k] * (1 - hidden3_input[j])
+                    end
+                end
+
+                delta_hidden2 = {}
+                for j = 1, hidden2_size do
+                    delta_hidden2[j] = 0
+                    for k = 1, hidden3_size do
+                        delta_hidden2[j] = delta_hidden2[j]
+                            + delta_hidden3[k] * weights_hidden2_hidden3[j][k] * (1 - hidden2_input[j])
+                    end
+                end
+
+                delta_hidden1 = {}
+                for j = 1, hidden1_size do
+                    delta_hidden1[j] = 0
+                    for k = 1, hidden2_size do
+                        delta_hidden1[j] = delta_hidden1[j]
+                            + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
+                    end
+                end
+
+                -- Aktualizacja wag
+                for j = 1, hidden4_size do
+                    weights_hidden4_output[j] = weights_hidden4_output[j]
+                        + learning_rate * delta_output * hidden4_output[j]
+                end
+
+                for j = 1, hidden3_size do
+                    for k = 1, hidden4_size do
+                        weights_hidden3_hidden4[j][k] = weights_hidden3_hidden4[j][k]
+                            + learning_rate * delta_hidden4[k] * hidden3_input[j]
+                    end
+                end
+
+                for j = 1, hidden2_size do
+                    for k = 1, hidden3_size do
+                        weights_hidden2_hidden3[j][k] = weights_hidden2_hidden3[j][k]
+                            + learning_rate * delta_hidden3[k] * hidden2_input[j]
+                    end
+                end
+
+                for j = 1, hidden1_size do
+                    for k = 1, hidden2_size do
+                        weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
+                            + learning_rate * delta_hidden2[k] * hidden1_input[j]
+                    end
+                end
+
+                for j = 1, input_size do
+                    for k = 1, hidden1_size do
+                        weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
+                            + learning_rate * delta_hidden1[k] * x_train[i][j]
+                    end
                 end
             end
-
-            for j = 1, hidden1_size do
-                for k = 1, hidden2_size do
-                    weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
-                        + learning_rate * delta_hidden2[k] * hidden1_input[j]
-                end
-            end
-
-            for j = 1, input_size do
-                for k = 1, hidden1_size do
-                    weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
-                        + learning_rate * delta_hidden1[k] * x_train[i][j]
-                end
-            end
-        end
-    end
-
-    -- Testowanie sieci
-
-    for i = 1, #x_test do
-        print("")
-
-        hidden1_input = {}
-        hidden2_input = {}
-        hidden3_input = {}
-        hidden3_output = {}
-        final_input = {}
-
-        for j = 1, hidden1_size do
-            hidden1_input[j] = 0
-            for k = 1, input_size do
-                hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
-            end
-            hidden1_input[j] = activation_input(hidden1_input[j])
         end
 
-        for j = 1, hidden2_size do
-            hidden2_input[j] = 0
-            for k = 1, hidden1_size do
-                hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
-            end
-            hidden2_input[j] = activation_hd(hidden2_input[j])
-        end
+        -- Testowanie sieci
 
-        for j = 1, hidden3_size do
-            hidden3_input[j] = 0
-            for k = 1, hidden2_size do
-                hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
-            end
-            hidden3_input[j] = activation_hd(hidden3_input[j])
-        end
+        for i = 1, #x_test do
+            print("")
 
-        for j = 1, hidden3_size do
-            hidden3_output[j] = activation_hd(hidden3_input[j])
-        end
-
-        final_input[1] = 0
-        for j = 1, hidden3_size do
-            final_input[1] = final_input[1] + hidden3_output[j] * weights_hidden3_output[j]
-        end
-        final_output = activation_output(final_input[1])
-
-        print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
-        print("Predicted output:" .. red, final_output .. reset)
-    end
-end
-
-if hidden_layers == 4 then
-    weights_input_hidden1 = {}
-    weights_hidden1_hidden2 = {}
-    weights_hidden2_hidden3 = {}
-    weights_hidden3_hidden4 = {}
-    weights_hidden4_output = {}
-
-    for i = 1, input_size do
-        weights_input_hidden1[i] = {}
-        for j = 1, hidden1_size do
-            weights_input_hidden1[i][j] = math.random()
-        end
-    end
-
-    for i = 1, hidden1_size do
-        weights_hidden1_hidden2[i] = {}
-        for j = 1, hidden2_size do
-            weights_hidden1_hidden2[i][j] = math.random()
-        end
-    end
-
-    for i = 1, hidden2_size do
-        weights_hidden2_hidden3[i] = {}
-        for j = 1, hidden3_size do
-            weights_hidden2_hidden3[i][j] = math.random()
-        end
-    end
-
-    for i = 1, hidden3_size do
-        weights_hidden3_hidden4[i] = {}
-        for j = 1, hidden4_size do
-            weights_hidden3_hidden4[i][j] = math.random()
-        end
-    end
-
-    for i = 1, hidden4_size do
-        weights_hidden4_output[i] = math.random()
-    end
-
-    -- Uczenie sieci
-
-    epochs = iterations
-
-    for epoch = 1, epochs do
-        for i = 1, #x_train do
-            -- Forward pass
             hidden1_input = {}
             hidden2_input = {}
             hidden3_input = {}
@@ -968,7 +1183,7 @@ if hidden_layers == 4 then
             for j = 1, hidden1_size do
                 hidden1_input[j] = 0
                 for k = 1, input_size do
-                    hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
                 end
                 hidden1_input[j] = activation_input(hidden1_input[j])
             end
@@ -1007,192 +1222,218 @@ if hidden_layers == 4 then
             end
             final_output = activation_output(final_input[1])
 
-            -- Obliczenie błędu
-            error = y_train[i] - final_output
+            print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
+            print("Predicted output:" .. red, final_output .. reset)
+        end
+    end
 
-            -- Backpropagation
-            delta_output = error * final_output * (1 - final_output)
+    if hidden_layers == 5 then
+        weights_input_hidden1 = {}
+        weights_hidden1_hidden2 = {}
+        weights_hidden2_hidden3 = {}
+        weights_hidden3_hidden4 = {}
+        weights_hidden4_hidden5 = {}
+        weights_hidden5_output = {}
 
-            delta_hidden4 = {}
-            for j = 1, hidden4_size do
-                delta_hidden4[j] = delta_output * weights_hidden4_output[j] * (1 - hidden4_output[j])
-            end
-
-            delta_hidden3 = {}
-            for j = 1, hidden3_size do
-                delta_hidden3[j] = 0
-                for k = 1, hidden4_size do
-                    delta_hidden3[j] = delta_hidden3[j]
-                        + delta_hidden4[k] * weights_hidden3_hidden4[j][k] * (1 - hidden3_input[j])
-                end
-            end
-
-            delta_hidden2 = {}
-            for j = 1, hidden2_size do
-                delta_hidden2[j] = 0
-                for k = 1, hidden3_size do
-                    delta_hidden2[j] = delta_hidden2[j]
-                        + delta_hidden3[k] * weights_hidden2_hidden3[j][k] * (1 - hidden2_input[j])
-                end
-            end
-
-            delta_hidden1 = {}
+        for i = 1, input_size do
+            weights_input_hidden1[i] = {}
             for j = 1, hidden1_size do
-                delta_hidden1[j] = 0
-                for k = 1, hidden2_size do
-                    delta_hidden1[j] = delta_hidden1[j]
-                        + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
-                end
+                weights_input_hidden1[i][j] = math.random()
             end
+        end
 
-            -- Aktualizacja wag
-            for j = 1, hidden4_size do
-                weights_hidden4_output[j] = weights_hidden4_output[j] + learning_rate * delta_output * hidden4_output[j]
-            end
-
-            for j = 1, hidden3_size do
-                for k = 1, hidden4_size do
-                    weights_hidden3_hidden4[j][k] = weights_hidden3_hidden4[j][k]
-                        + learning_rate * delta_hidden4[k] * hidden3_input[j]
-                end
-            end
-
+        for i = 1, hidden1_size do
+            weights_hidden1_hidden2[i] = {}
             for j = 1, hidden2_size do
-                for k = 1, hidden3_size do
-                    weights_hidden2_hidden3[j][k] = weights_hidden2_hidden3[j][k]
-                        + learning_rate * delta_hidden3[k] * hidden2_input[j]
+                weights_hidden1_hidden2[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden2_size do
+            weights_hidden2_hidden3[i] = {}
+            for j = 1, hidden3_size do
+                weights_hidden2_hidden3[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden3_size do
+            weights_hidden3_hidden4[i] = {}
+            for j = 1, hidden4_size do
+                weights_hidden3_hidden4[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden4_size do
+            weights_hidden4_hidden5[i] = {}
+            for j = 1, hidden5_size do
+                weights_hidden4_hidden5[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden5_size do
+            weights_hidden5_output[i] = math.random()
+        end
+
+        -- Uczenie sieci
+
+        epochs = iterations
+
+        for epoch = 1, epochs do
+            for i = 1, #x_train do
+                -- Forward pass
+                hidden1_input = {}
+                hidden2_input = {}
+                hidden3_input = {}
+                hidden4_input = {}
+                hidden5_input = {}
+                hidden5_output = {}
+                final_input = {}
+
+                for j = 1, hidden1_size do
+                    hidden1_input[j] = 0
+                    for k = 1, input_size do
+                        hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    end
+                    hidden1_input[j] = activation_input(hidden1_input[j])
+                end
+
+                for j = 1, hidden2_size do
+                    hidden2_input[j] = 0
+                    for k = 1, hidden1_size do
+                        hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                    end
+                    hidden2_input[j] = activation_hd(hidden2_input[j])
+                end
+
+                for j = 1, hidden3_size do
+                    hidden3_input[j] = 0
+                    for k = 1, hidden2_size do
+                        hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+                    end
+                    hidden3_input[j] = activation_hd(hidden3_input[j])
+                end
+
+                for j = 1, hidden4_size do
+                    hidden4_input[j] = 0
+                    for k = 1, hidden3_size do
+                        hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
+                    end
+                    hidden4_input[j] = activation_hd(hidden4_input[j])
+                end
+
+                for j = 1, hidden5_size do
+                    hidden5_input[j] = 0
+                    for k = 1, hidden4_size do
+                        hidden5_input[j] = hidden5_input[j] + hidden4_input[k] * weights_hidden4_hidden5[k][j]
+                    end
+                    hidden5_input[j] = activation_hd(hidden5_input[j])
+                end
+
+                for j = 1, hidden5_size do
+                    hidden5_output[j] = activation_hd(hidden5_input[j])
+                end
+
+                final_input[1] = 0
+                for j = 1, hidden5_size do
+                    final_input[1] = final_input[1] + hidden5_output[j] * weights_hidden5_output[j]
+                end
+                final_output = activation_output(final_input[1])
+
+                -- Obliczenie błędu
+                error = y_train[i] - final_output
+
+                -- Backpropagation
+                delta_output = error * final_output * (1 - final_output)
+
+                delta_hidden5 = {}
+                for j = 1, hidden5_size do
+                    delta_hidden5[j] = delta_output * weights_hidden5_output[j] * (1 - hidden5_output[j])
+                end
+
+                delta_hidden4 = {}
+                for j = 1, hidden4_size do
+                    delta_hidden4[j] = 0
+                    for k = 1, hidden5_size do
+                        delta_hidden4[j] = delta_hidden4[j]
+                            + delta_hidden5[k] * weights_hidden4_hidden5[j][k] * (1 - hidden4_input[j])
+                    end
+                end
+
+                delta_hidden3 = {}
+                for j = 1, hidden3_size do
+                    delta_hidden3[j] = 0
+                    for k = 1, hidden4_size do
+                        delta_hidden3[j] = delta_hidden3[j]
+                            + delta_hidden4[k] * weights_hidden3_hidden4[j][k] * (1 - hidden3_input[j])
+                    end
+                end
+
+                delta_hidden2 = {}
+                for j = 1, hidden2_size do
+                    delta_hidden2[j] = 0
+                    for k = 1, hidden3_size do
+                        delta_hidden2[j] = delta_hidden2[j]
+                            + delta_hidden3[k] * weights_hidden2_hidden3[j][k] * (1 - hidden2_input[j])
+                    end
+                end
+
+                delta_hidden1 = {}
+                for j = 1, hidden1_size do
+                    delta_hidden1[j] = 0
+                    for k = 1, hidden2_size do
+                        delta_hidden1[j] = delta_hidden1[j]
+                            + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
+                    end
+                end
+
+                -- Aktualizacja wag
+                for j = 1, hidden5_size do
+                    weights_hidden5_output[j] = weights_hidden5_output[j]
+                        + learning_rate * delta_output * hidden5_output[j]
+                end
+
+                for j = 1, hidden4_size do
+                    for k = 1, hidden5_size do
+                        weights_hidden4_hidden5[j][k] = weights_hidden4_hidden5[j][k]
+                            + learning_rate * delta_hidden5[k] * hidden4_input[j]
+                    end
+                end
+
+                for j = 1, hidden3_size do
+                    for k = 1, hidden4_size do
+                        weights_hidden3_hidden4[j][k] = weights_hidden3_hidden4[j][k]
+                            + learning_rate * delta_hidden4[k] * hidden3_input[j]
+                    end
+                end
+
+                for j = 1, hidden2_size do
+                    for k = 1, hidden3_size do
+                        weights_hidden2_hidden3[j][k] = weights_hidden2_hidden3[j][k]
+                            + learning_rate * delta_hidden3[k] * hidden2_input[j]
+                    end
+                end
+
+                for j = 1, hidden1_size do
+                    for k = 1, hidden2_size do
+                        weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
+                            + learning_rate * delta_hidden2[k] * hidden1_input[j]
+                    end
+                end
+
+                for j = 1, input_size do
+                    for k = 1, hidden1_size do
+                        weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
+                            + learning_rate * delta_hidden1[k] * x_train[i][j]
+                    end
                 end
             end
-
-            for j = 1, hidden1_size do
-                for k = 1, hidden2_size do
-                    weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
-                        + learning_rate * delta_hidden2[k] * hidden1_input[j]
-                end
-            end
-
-            for j = 1, input_size do
-                for k = 1, hidden1_size do
-                    weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
-                        + learning_rate * delta_hidden1[k] * x_train[i][j]
-                end
-            end
-        end
-    end
-
-    -- Testowanie sieci
-
-    for i = 1, #x_test do
-        print("")
-
-        hidden1_input = {}
-        hidden2_input = {}
-        hidden3_input = {}
-        hidden4_input = {}
-        hidden4_output = {}
-        final_input = {}
-
-        for j = 1, hidden1_size do
-            hidden1_input[j] = 0
-            for k = 1, input_size do
-                hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
-            end
-            hidden1_input[j] = activation_input(hidden1_input[j])
         end
 
-        for j = 1, hidden2_size do
-            hidden2_input[j] = 0
-            for k = 1, hidden1_size do
-                hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
-            end
-            hidden2_input[j] = activation_hd(hidden2_input[j])
-        end
+        -- Testowanie sieci
 
-        for j = 1, hidden3_size do
-            hidden3_input[j] = 0
-            for k = 1, hidden2_size do
-                hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
-            end
-            hidden3_input[j] = activation_hd(hidden3_input[j])
-        end
+        for i = 1, #x_test do
+            print("")
 
-        for j = 1, hidden4_size do
-            hidden4_input[j] = 0
-            for k = 1, hidden3_size do
-                hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
-            end
-            hidden4_input[j] = activation_hd(hidden4_input[j])
-        end
-
-        for j = 1, hidden4_size do
-            hidden4_output[j] = activation_hd(hidden4_input[j])
-        end
-
-        final_input[1] = 0
-        for j = 1, hidden4_size do
-            final_input[1] = final_input[1] + hidden4_output[j] * weights_hidden4_output[j]
-        end
-        final_output = activation_output(final_input[1])
-
-        print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
-        print("Predicted output:" .. red, final_output .. reset)
-    end
-end
-
-if hidden_layers == 5 then
-    weights_input_hidden1 = {}
-    weights_hidden1_hidden2 = {}
-    weights_hidden2_hidden3 = {}
-    weights_hidden3_hidden4 = {}
-    weights_hidden4_hidden5 = {}
-    weights_hidden5_output = {}
-
-    for i = 1, input_size do
-        weights_input_hidden1[i] = {}
-        for j = 1, hidden1_size do
-            weights_input_hidden1[i][j] = math.random()
-        end
-    end
-
-    for i = 1, hidden1_size do
-        weights_hidden1_hidden2[i] = {}
-        for j = 1, hidden2_size do
-            weights_hidden1_hidden2[i][j] = math.random()
-        end
-    end
-
-    for i = 1, hidden2_size do
-        weights_hidden2_hidden3[i] = {}
-        for j = 1, hidden3_size do
-            weights_hidden2_hidden3[i][j] = math.random()
-        end
-    end
-
-    for i = 1, hidden3_size do
-        weights_hidden3_hidden4[i] = {}
-        for j = 1, hidden4_size do
-            weights_hidden3_hidden4[i][j] = math.random()
-        end
-    end
-
-    for i = 1, hidden4_size do
-        weights_hidden4_hidden5[i] = {}
-        for j = 1, hidden5_size do
-            weights_hidden4_hidden5[i][j] = math.random()
-        end
-    end
-
-    for i = 1, hidden5_size do
-        weights_hidden5_output[i] = math.random()
-    end
-
-    -- Uczenie sieci
-
-    epochs = iterations
-
-    for epoch = 1, epochs do
-        for i = 1, #x_train do
-            -- Forward pass
             hidden1_input = {}
             hidden2_input = {}
             hidden3_input = {}
@@ -1204,7 +1445,7 @@ if hidden_layers == 5 then
             for j = 1, hidden1_size do
                 hidden1_input[j] = 0
                 for k = 1, input_size do
-                    hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
                 end
                 hidden1_input[j] = activation_input(hidden1_input[j])
             end
@@ -1251,159 +1492,1982 @@ if hidden_layers == 5 then
             end
             final_output = activation_output(final_input[1])
 
-            -- Obliczenie błędu
-            error = y_train[i] - final_output
-
-            -- Backpropagation
-            delta_output = error * final_output * (1 - final_output)
-
-            delta_hidden5 = {}
-            for j = 1, hidden5_size do
-                delta_hidden5[j] = delta_output * weights_hidden5_output[j] * (1 - hidden5_output[j])
-            end
-
-            delta_hidden4 = {}
-            for j = 1, hidden4_size do
-                delta_hidden4[j] = 0
-                for k = 1, hidden5_size do
-                    delta_hidden4[j] = delta_hidden4[j]
-                        + delta_hidden5[k] * weights_hidden4_hidden5[j][k] * (1 - hidden4_input[j])
-                end
-            end
-
-            delta_hidden3 = {}
-            for j = 1, hidden3_size do
-                delta_hidden3[j] = 0
-                for k = 1, hidden4_size do
-                    delta_hidden3[j] = delta_hidden3[j]
-                        + delta_hidden4[k] * weights_hidden3_hidden4[j][k] * (1 - hidden3_input[j])
-                end
-            end
-
-            delta_hidden2 = {}
-            for j = 1, hidden2_size do
-                delta_hidden2[j] = 0
-                for k = 1, hidden3_size do
-                    delta_hidden2[j] = delta_hidden2[j]
-                        + delta_hidden3[k] * weights_hidden2_hidden3[j][k] * (1 - hidden2_input[j])
-                end
-            end
-
-            delta_hidden1 = {}
-            for j = 1, hidden1_size do
-                delta_hidden1[j] = 0
-                for k = 1, hidden2_size do
-                    delta_hidden1[j] = delta_hidden1[j]
-                        + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
-                end
-            end
-
-            -- Aktualizacja wag
-            for j = 1, hidden5_size do
-                weights_hidden5_output[j] = weights_hidden5_output[j] + learning_rate * delta_output * hidden5_output[j]
-            end
-
-            for j = 1, hidden4_size do
-                for k = 1, hidden5_size do
-                    weights_hidden4_hidden5[j][k] = weights_hidden4_hidden5[j][k]
-                        + learning_rate * delta_hidden5[k] * hidden4_input[j]
-                end
-            end
-
-            for j = 1, hidden3_size do
-                for k = 1, hidden4_size do
-                    weights_hidden3_hidden4[j][k] = weights_hidden3_hidden4[j][k]
-                        + learning_rate * delta_hidden4[k] * hidden3_input[j]
-                end
-            end
-
-            for j = 1, hidden2_size do
-                for k = 1, hidden3_size do
-                    weights_hidden2_hidden3[j][k] = weights_hidden2_hidden3[j][k]
-                        + learning_rate * delta_hidden3[k] * hidden2_input[j]
-                end
-            end
-
-            for j = 1, hidden1_size do
-                for k = 1, hidden2_size do
-                    weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
-                        + learning_rate * delta_hidden2[k] * hidden1_input[j]
-                end
-            end
-
-            for j = 1, input_size do
-                for k = 1, hidden1_size do
-                    weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
-                        + learning_rate * delta_hidden1[k] * x_train[i][j]
-                end
-            end
+            print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
+            print("Predicted output:" .. red, final_output .. reset)
         end
     end
 
-    -- Testowanie sieci
+    if hidden_layers == 6 then
+        weights_input_hidden1 = {}
+        weights_hidden1_hidden2 = {}
+        weights_hidden2_hidden3 = {}
+        weights_hidden3_hidden4 = {}
+        weights_hidden4_hidden5 = {}
+        weights_hidden5_hidden6 = {}
+        weights_hidden6_output = {}
 
-    for i = 1, #x_test do
-        print("")
-
-        hidden1_input = {}
-        hidden2_input = {}
-        hidden3_input = {}
-        hidden4_input = {}
-        hidden5_input = {}
-        hidden5_output = {}
-        final_input = {}
-
-        for j = 1, hidden1_size do
-            hidden1_input[j] = 0
-            for k = 1, input_size do
-                hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
+        for i = 1, input_size do
+            weights_input_hidden1[i] = {}
+            for j = 1, hidden1_size do
+                weights_input_hidden1[i][j] = math.random()
             end
-            hidden1_input[j] = activation_input(hidden1_input[j])
         end
 
-        for j = 1, hidden2_size do
-            hidden2_input[j] = 0
-            for k = 1, hidden1_size do
-                hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+        for i = 1, hidden1_size do
+            weights_hidden1_hidden2[i] = {}
+            for j = 1, hidden2_size do
+                weights_hidden1_hidden2[i][j] = math.random()
             end
-            hidden2_input[j] = activation_hd(hidden2_input[j])
         end
 
-        for j = 1, hidden3_size do
-            hidden3_input[j] = 0
-            for k = 1, hidden2_size do
-                hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+        for i = 1, hidden2_size do
+            weights_hidden2_hidden3[i] = {}
+            for j = 1, hidden3_size do
+                weights_hidden2_hidden3[i][j] = math.random()
             end
-            hidden3_input[j] = activation_hd(hidden3_input[j])
         end
 
-        for j = 1, hidden4_size do
-            hidden4_input[j] = 0
-            for k = 1, hidden3_size do
-                hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
+        for i = 1, hidden3_size do
+            weights_hidden3_hidden4[i] = {}
+            for j = 1, hidden4_size do
+                weights_hidden3_hidden4[i][j] = math.random()
             end
-            hidden4_input[j] = activation_hd(hidden4_input[j])
         end
 
-        for j = 1, hidden5_size do
-            hidden5_input[j] = 0
-            for k = 1, hidden4_size do
-                hidden5_input[j] = hidden5_input[j] + hidden4_input[k] * weights_hidden4_hidden5[k][j]
+        for i = 1, hidden4_size do
+            weights_hidden4_hidden5[i] = {}
+            for j = 1, hidden5_size do
+                weights_hidden4_hidden5[i][j] = math.random()
             end
-            hidden5_input[j] = activation_hd(hidden5_input[j])
         end
 
-        for j = 1, hidden5_size do
-            hidden5_output[j] = activation_hd(hidden5_input[j])
+        for i = 1, hidden5_size do
+            weights_hidden5_hidden6[i] = {}
+            for j = 1, hidden6_size do
+                weights_hidden5_hidden6[i][j] = math.random()
+            end
         end
 
-        final_input[1] = 0
-        for j = 1, hidden5_size do
-            final_input[1] = final_input[1] + hidden5_output[j] * weights_hidden5_output[j]
+        for i = 1, hidden6_size do
+            weights_hidden6_output[i] = math.random()
         end
-        final_output = activation_output(final_input[1])
 
-        print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
-        print("Predicted output:" .. red, final_output .. reset)
+        -- Uczenie sieci
+
+        epochs = iterations
+
+        for epoch = 1, epochs do
+            for i = 1, #x_train do
+                -- Forward pass
+                hidden1_input = {}
+                hidden2_input = {}
+                hidden3_input = {}
+                hidden4_input = {}
+                hidden5_input = {}
+                hidden6_input = {}
+                hidden6_output = {}
+                final_input = {}
+
+                for j = 1, hidden1_size do
+                    hidden1_input[j] = 0
+                    for k = 1, input_size do
+                        hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    end
+                    hidden1_input[j] = activation_input(hidden1_input[j])
+                end
+
+                for j = 1, hidden2_size do
+                    hidden2_input[j] = 0
+                    for k = 1, hidden1_size do
+                        hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                    end
+                    hidden2_input[j] = activation_hd(hidden2_input[j])
+                end
+
+                for j = 1, hidden3_size do
+                    hidden3_input[j] = 0
+                    for k = 1, hidden2_size do
+                        hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+                    end
+                    hidden3_input[j] = activation_hd(hidden3_input[j])
+                end
+
+                for j = 1, hidden4_size do
+                    hidden4_input[j] = 0
+                    for k = 1, hidden3_size do
+                        hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
+                    end
+                    hidden4_input[j] = activation_hd(hidden4_input[j])
+                end
+
+                for j = 1, hidden5_size do
+                    hidden5_input[j] = 0
+                    for k = 1, hidden4_size do
+                        hidden5_input[j] = hidden5_input[j] + hidden4_input[k] * weights_hidden4_hidden5[k][j]
+                    end
+                    hidden5_input[j] = activation_hd(hidden5_input[j])
+                end
+
+                for j = 1, hidden6_size do
+                    hidden6_input[j] = 0
+                    for k = 1, hidden5_size do
+                        hidden6_input[j] = hidden6_input[j] + hidden5_input[k] * weights_hidden5_hidden6[k][j]
+                    end
+                    hidden6_input[j] = activation_hd(hidden6_input[j])
+                end
+
+                for j = 1, hidden6_size do
+                    hidden6_output[j] = activation_hd(hidden6_input[j])
+                end
+
+                final_input[1] = 0
+                for j = 1, hidden6_size do
+                    final_input[1] = final_input[1] + hidden6_output[j] * weights_hidden6_output[j]
+                end
+                final_output = activation_output(final_input[1])
+
+                -- Obliczenie błędu
+                error = y_train[i] - final_output
+
+                -- Backpropagation
+                delta_output = error * final_output * (1 - final_output)
+
+                delta_hidden6 = {}
+                for j = 1, hidden6_size do
+                    delta_hidden6[j] = delta_output * weights_hidden6_output[j] * (1 - hidden6_output[j])
+                end
+
+                delta_hidden5 = {}
+                for j = 1, hidden5_size do
+                    delta_hidden5[j] = 0
+                    for k = 1, hidden6_size do
+                        delta_hidden5[j] = delta_hidden5[j]
+                            + delta_hidden6[k] * weights_hidden5_hidden6[j][k] * (1 - hidden5_input[j])
+                    end
+                end
+
+                delta_hidden4 = {}
+                for j = 1, hidden4_size do
+                    delta_hidden4[j] = 0
+                    for k = 1, hidden5_size do
+                        delta_hidden4[j] = delta_hidden4[j]
+                            + delta_hidden5[k] * weights_hidden4_hidden5[j][k] * (1 - hidden4_input[j])
+                    end
+                end
+
+                delta_hidden3 = {}
+                for j = 1, hidden3_size do
+                    delta_hidden3[j] = 0
+                    for k = 1, hidden4_size do
+                        delta_hidden3[j] = delta_hidden3[j]
+                            + delta_hidden4[k] * weights_hidden3_hidden4[j][k] * (1 - hidden3_input[j])
+                    end
+                end
+
+                delta_hidden2 = {}
+                for j = 1, hidden2_size do
+                    delta_hidden2[j] = 0
+                    for k = 1, hidden3_size do
+                        delta_hidden2[j] = delta_hidden2[j]
+                            + delta_hidden3[k] * weights_hidden2_hidden3[j][k] * (1 - hidden2_input[j])
+                    end
+                end
+
+                delta_hidden1 = {}
+                for j = 1, hidden1_size do
+                    delta_hidden1[j] = 0
+                    for k = 1, hidden2_size do
+                        delta_hidden1[j] = delta_hidden1[j]
+                            + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
+                    end
+                end
+
+                -- Aktualizacja wag
+                for j = 1, hidden6_size do
+                    weights_hidden6_output[j] = weights_hidden6_output[j]
+                        + learning_rate * delta_output * hidden6_output[j]
+                end
+
+                for j = 1, hidden5_size do
+                    for k = 1, hidden6_size do
+                        weights_hidden5_hidden6[j][k] = weights_hidden5_hidden6[j][k]
+                            + learning_rate * delta_hidden6[k] * hidden5_input[j]
+                    end
+                end
+
+                for j = 1, hidden4_size do
+                    for k = 1, hidden5_size do
+                        weights_hidden4_hidden5[j][k] = weights_hidden4_hidden5[j][k]
+                            + learning_rate * delta_hidden5[k] * hidden4_input[j]
+                    end
+                end
+
+                for j = 1, hidden3_size do
+                    for k = 1, hidden4_size do
+                        weights_hidden3_hidden4[j][k] = weights_hidden3_hidden4[j][k]
+                            + learning_rate * delta_hidden4[k] * hidden3_input[j]
+                    end
+                end
+
+                for j = 1, hidden2_size do
+                    for k = 1, hidden3_size do
+                        weights_hidden2_hidden3[j][k] = weights_hidden2_hidden3[j][k]
+                            + learning_rate * delta_hidden3[k] * hidden2_input[j]
+                    end
+                end
+
+                for j = 1, hidden1_size do
+                    for k = 1, hidden2_size do
+                        weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
+                            + learning_rate * delta_hidden2[k] * hidden1_input[j]
+                    end
+                end
+
+                for j = 1, input_size do
+                    for k = 1, hidden1_size do
+                        weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
+                            + learning_rate * delta_hidden1[k] * x_train[i][j]
+                    end
+                end
+            end
+        end
+
+        -- Testowanie sieci
+
+        for i = 1, #x_test do
+            print("")
+
+            hidden1_input = {}
+            hidden2_input = {}
+            hidden3_input = {}
+            hidden4_input = {}
+            hidden5_input = {}
+            hidden6_input = {}
+            hidden6_output = {}
+            final_input = {}
+
+            for j = 1, hidden1_size do
+                hidden1_input[j] = 0
+                for k = 1, input_size do
+                    hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
+                end
+                hidden1_input[j] = activation_input(hidden1_input[j])
+            end
+
+            for j = 1, hidden2_size do
+                hidden2_input[j] = 0
+                for k = 1, hidden1_size do
+                    hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                end
+                hidden2_input[j] = activation_hd(hidden2_input[j])
+            end
+
+            for j = 1, hidden3_size do
+                hidden3_input[j] = 0
+                for k = 1, hidden2_size do
+                    hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+                end
+                hidden3_input[j] = activation_hd(hidden3_input[j])
+            end
+
+            for j = 1, hidden4_size do
+                hidden4_input[j] = 0
+                for k = 1, hidden3_size do
+                    hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
+                end
+                hidden4_input[j] = activation_hd(hidden4_input[j])
+            end
+
+            for j = 1, hidden5_size do
+                hidden5_input[j] = 0
+                for k = 1, hidden4_size do
+                    hidden5_input[j] = hidden5_input[j] + hidden4_input[k] * weights_hidden4_hidden5[k][j]
+                end
+                hidden5_input[j] = activation_hd(hidden5_input[j])
+            end
+
+            for j = 1, hidden6_size do
+                hidden6_input[j] = 0
+                for k = 1, hidden5_size do
+                    hidden6_input[j] = hidden6_input[j] + hidden5_input[k] * weights_hidden5_hidden6[k][j]
+                end
+                hidden6_input[j] = activation_hd(hidden6_input[j])
+            end
+
+            for j = 1, hidden6_size do
+                hidden6_output[j] = activation_hd(hidden6_input[j])
+            end
+
+            final_input[1] = 0
+            for j = 1, hidden6_size do
+                final_input[1] = final_input[1] + hidden6_output[j] * weights_hidden6_output[j]
+            end
+            final_output = activation_output(final_input[1])
+
+            print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
+            print("Predicted output:" .. red, final_output .. reset)
+        end
+    end
+end
+
+if optimisation == "adamw" or optimisation == "AdamW" or optimisation == "ADAMW" then
+    if hidden_layers == 2 then
+        weights_input_hidden1 = {}
+        weights_hidden1_hidden2 = {}
+        weights_hidden2_output = {}
+
+        for i = 1, input_size do
+            weights_input_hidden1[i] = {}
+            for j = 1, hidden1_size do
+                weights_input_hidden1[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden1_size do
+            weights_hidden1_hidden2[i] = {}
+            for j = 1, hidden2_size do
+                weights_hidden1_hidden2[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden2_size do
+            weights_hidden2_output[i] = math.random()
+        end
+
+        -- Inicjalizacja zmiennych AdamW
+        m_input_hidden1 = {}
+        v_input_hidden1 = {}
+        m_hidden1_hidden2 = {}
+        v_hidden1_hidden2 = {}
+        m_hidden2_output = {}
+        v_hidden2_output = {}
+        wd_input_hidden1 = {}
+        wd_hidden1_hidden2 = {}
+        wd_hidden2_output = {}
+
+        for i = 1, input_size do
+            m_input_hidden1[i] = {}
+            v_input_hidden1[i] = {}
+            wd_input_hidden1[i] = {}
+            for j = 1, hidden1_size do
+                m_input_hidden1[i][j] = 0
+                v_input_hidden1[i][j] = 0
+                wd_input_hidden1[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden1_size do
+            m_hidden1_hidden2[i] = {}
+            v_hidden1_hidden2[i] = {}
+            wd_hidden1_hidden2[i] = {}
+            for j = 1, hidden2_size do
+                m_hidden1_hidden2[i][j] = 0
+                v_hidden1_hidden2[i][j] = 0
+                wd_hidden1_hidden2[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden2_size do
+            m_hidden2_output[i] = 0
+            v_hidden2_output[i] = 0
+            wd_hidden2_output[i] = 0
+        end
+
+        -- Uczenie sieci
+        epochs = iterations
+        beta1 = 0.9
+        beta2 = 0.999
+        epsilon = 1e-8
+        learning_rate = 0.001
+        weight_decay = 0.001
+
+        for epoch = 1, epochs do
+            for i = 1, #x_train do
+                -- Forward pass
+                hidden1_input = {}
+                hidden2_input = {}
+                hidden2_output = {}
+                final_input = {}
+
+                for j = 1, hidden1_size do
+                    hidden1_input[j] = 0
+                    for k = 1, input_size do
+                        hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    end
+                    hidden1_input[j] = activation_input(hidden1_input[j])
+                end
+
+                for j = 1, hidden2_size do
+                    hidden2_input[j] = 0
+                    for k = 1, hidden1_size do
+                        hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                    end
+                    hidden2_input[j] = activation_hd(hidden2_input[j])
+                end
+
+                for j = 1, hidden2_size do
+                    hidden2_output[j] = activation_hd(hidden2_input[j])
+                end
+
+                final_input[1] = 0
+                for j = 1, hidden2_size do
+                    final_input[1] = final_input[1] + hidden2_output[j] * weights_hidden2_output[j]
+                end
+                final_output = activation_output(final_input[1])
+
+                -- Obliczenie błędu
+                error = y_train[i] - final_output
+
+                -- Backpropagation
+                delta_output = error * final_output * (1 - final_output)
+
+                delta_hidden2 = {}
+                for j = 1, hidden2_size do
+                    delta_hidden2[j] = delta_output * weights_hidden2_output[j] * (1 - hidden2_output[j])
+                end
+
+                delta_hidden1 = {}
+                for j = 1, hidden1_size do
+                    delta_hidden1[j] = 0
+                    for k = 1, hidden2_size do
+                        delta_hidden1[j] = delta_hidden1[j]
+                            + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
+                    end
+                end
+
+                -- Aktualizacja wag zgodnie z AdamW
+                for j = 1, hidden2_size do
+                    m_hidden2_output[j] = beta1 * m_hidden2_output[j] + (1 - beta1) * delta_output * hidden2_output[j]
+                    v_hidden2_output[j] = beta2 * v_hidden2_output[j]
+                        + (1 - beta2) * (delta_output * hidden2_output[j]) ^ 2
+                    m_hat = m_hidden2_output[j] / (1 - beta1 ^ epoch)
+                    v_hat = v_hidden2_output[j] / (1 - beta2 ^ epoch)
+                    wd_hidden2_output[j] = weight_decay * weights_hidden2_output[j]
+                    weights_hidden2_output[j] = weights_hidden2_output[j]
+                        + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden2_output[j])
+                end
+
+                for j = 1, hidden1_size do
+                    for k = 1, hidden2_size do
+                        m_hidden1_hidden2[j][k] = beta1 * m_hidden1_hidden2[j][k]
+                            + (1 - beta1) * delta_hidden2[k] * hidden1_input[j]
+                        v_hidden1_hidden2[j][k] = beta2 * v_hidden1_hidden2[j][k]
+                            + (1 - beta2) * (delta_hidden2[k] * hidden1_input[j]) ^ 2
+                        m_hat = m_hidden1_hidden2[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden1_hidden2[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden1_hidden2[j][k] = weight_decay * weights_hidden1_hidden2[j][k]
+                        weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden1_hidden2[j][k])
+                    end
+                end
+
+                for j = 1, input_size do
+                    for k = 1, hidden1_size do
+                        m_input_hidden1[j][k] = beta1 * m_input_hidden1[j][k]
+                            + (1 - beta1) * delta_hidden1[k] * x_train[i][j]
+                        v_input_hidden1[j][k] = beta2 * v_input_hidden1[j][k]
+                            + (1 - beta2) * (delta_hidden1[k] * x_train[i][j]) ^ 2
+                        m_hat = m_input_hidden1[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_input_hidden1[j][k] / (1 - beta2 ^ epoch)
+                        wd_input_hidden1[j][k] = weight_decay * weights_input_hidden1[j][k]
+                        weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_input_hidden1[j][k])
+                    end
+                end
+            end
+        end
+
+        -- Testowanie sieci
+        for i = 1, #x_test do
+            print("")
+
+            hidden1_input = {}
+            hidden2_input = {}
+            hidden2_output = {}
+            final_input = {}
+
+            for j = 1, hidden1_size do
+                hidden1_input[j] = 0
+                for k = 1, input_size do
+                    hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
+                end
+                hidden1_input[j] = activation_input(hidden1_input[j])
+            end
+
+            for j = 1, hidden2_size do
+                hidden2_input[j] = 0
+                for k = 1, hidden1_size do
+                    hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                end
+                hidden2_input[j] = activation_hd(hidden2_input[j])
+            end
+
+            for j = 1, hidden2_size do
+                hidden2_output[j] = activation_hd(hidden2_input[j])
+            end
+
+            final_input[1] = 0
+            for j = 1, hidden2_size do
+                final_input[1] = final_input[1] + hidden2_output[j] * weights_hidden2_output[j]
+            end
+            final_output = activation_output(final_input[1])
+
+            print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
+            print("Predicted output:" .. red, final_output .. reset)
+        end
+    end
+
+    if hidden_layers == 3 then
+        weights_input_hidden1 = {}
+        weights_hidden1_hidden2 = {}
+        weights_hidden2_hidden3 = {}
+        weights_hidden3_output = {}
+
+        for i = 1, input_size do
+            weights_input_hidden1[i] = {}
+            for j = 1, hidden1_size do
+                weights_input_hidden1[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden1_size do
+            weights_hidden1_hidden2[i] = {}
+            for j = 1, hidden2_size do
+                weights_hidden1_hidden2[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden2_size do
+            weights_hidden2_hidden3[i] = {}
+            for j = 1, hidden3_size do
+                weights_hidden2_hidden3[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden3_size do
+            weights_hidden3_output[i] = math.random()
+        end
+
+        -- Inicjalizacja zmiennych AdamW
+        m_input_hidden1 = {}
+        v_input_hidden1 = {}
+        m_hidden1_hidden2 = {}
+        v_hidden1_hidden2 = {}
+        m_hidden2_hidden3 = {}
+        v_hidden2_hidden3 = {}
+        m_hidden3_output = {}
+        v_hidden3_output = {}
+        wd_input_hidden1 = {}
+        wd_hidden1_hidden2 = {}
+        wd_hidden2_hidden3 = {}
+        wd_hidden3_output = {}
+
+        for i = 1, input_size do
+            m_input_hidden1[i] = {}
+            v_input_hidden1[i] = {}
+            wd_input_hidden1[i] = {}
+            for j = 1, hidden1_size do
+                m_input_hidden1[i][j] = 0
+                v_input_hidden1[i][j] = 0
+                wd_input_hidden1[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden1_size do
+            m_hidden1_hidden2[i] = {}
+            v_hidden1_hidden2[i] = {}
+            wd_hidden1_hidden2[i] = {}
+            for j = 1, hidden2_size do
+                m_hidden1_hidden2[i][j] = 0
+                v_hidden1_hidden2[i][j] = 0
+                wd_hidden1_hidden2[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden2_size do
+            m_hidden2_hidden3[i] = {}
+            v_hidden2_hidden3[i] = {}
+            wd_hidden2_hidden3[i] = {}
+            for j = 1, hidden3_size do
+                m_hidden2_hidden3[i][j] = 0
+                v_hidden2_hidden3[i][j] = 0
+                wd_hidden2_hidden3[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden3_size do
+            m_hidden3_output[i] = 0
+            v_hidden3_output[i] = 0
+            wd_hidden3_output[i] = 0
+        end
+
+        -- Uczenie sieci
+        epochs = iterations
+        beta1 = 0.9
+        beta2 = 0.999
+        epsilon = 1e-8
+        learning_rate = 0.001
+        weight_decay = 0.001
+
+        for epoch = 1, epochs do
+            for i = 1, #x_train do
+                -- Forward pass
+                hidden1_input = {}
+                hidden2_input = {}
+                hidden3_input = {}
+                hidden3_output = {}
+                final_input = {}
+
+                for j = 1, hidden1_size do
+                    hidden1_input[j] = 0
+                    for k = 1, input_size do
+                        hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    end
+                    hidden1_input[j] = activation_input(hidden1_input[j])
+                end
+
+                for j = 1, hidden2_size do
+                    hidden2_input[j] = 0
+                    for k = 1, hidden1_size do
+                        hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                    end
+                    hidden2_input[j] = activation_hd(hidden2_input[j])
+                end
+
+                for j = 1, hidden3_size do
+                    hidden3_input[j] = 0
+                    for k = 1, hidden2_size do
+                        hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+                    end
+                    hidden3_input[j] = activation_hd(hidden3_input[j])
+                end
+
+                for j = 1, hidden3_size do
+                    hidden3_output[j] = activation_hd(hidden3_input[j])
+                end
+
+                final_input[1] = 0
+                for j = 1, hidden3_size do
+                    final_input[1] = final_input[1] + hidden3_output[j] * weights_hidden3_output[j]
+                end
+                final_output = activation_output(final_input[1])
+
+                -- Obliczenie błędu
+                error = y_train[i] - final_output
+
+                -- Backpropagation
+                delta_output = error * final_output * (1 - final_output)
+
+                delta_hidden3 = {}
+                for j = 1, hidden3_size do
+                    delta_hidden3[j] = delta_output * weights_hidden3_output[j] * (1 - hidden3_output[j])
+                end
+
+                delta_hidden2 = {}
+                for j = 1, hidden2_size do
+                    delta_hidden2[j] = 0
+                    for k = 1, hidden3_size do
+                        delta_hidden2[j] = delta_hidden2[j]
+                            + delta_hidden3[k] * weights_hidden2_hidden3[j][k] * (1 - hidden2_input[j])
+                    end
+                end
+
+                delta_hidden1 = {}
+                for j = 1, hidden1_size do
+                    delta_hidden1[j] = 0
+                    for k = 1, hidden2_size do
+                        delta_hidden1[j] = delta_hidden1[j]
+                            + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
+                    end
+                end
+
+                -- Aktualizacja wag zgodnie z AdamW
+                for j = 1, hidden3_size do
+                    m_hidden3_output[j] = beta1 * m_hidden3_output[j] + (1 - beta1) * delta_output * hidden3_output[j]
+                    v_hidden3_output[j] = beta2 * v_hidden3_output[j]
+                        + (1 - beta2) * (delta_output * hidden3_output[j]) ^ 2
+                    m_hat = m_hidden3_output[j] / (1 - beta1 ^ epoch)
+                    v_hat = v_hidden3_output[j] / (1 - beta2 ^ epoch)
+                    wd_hidden3_output[j] = weight_decay * weights_hidden3_output[j]
+                    weights_hidden3_output[j] = weights_hidden3_output[j]
+                        + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden3_output[j])
+                end
+
+                for j = 1, hidden2_size do
+                    for k = 1, hidden3_size do
+                        m_hidden2_hidden3[j][k] = beta1 * m_hidden2_hidden3[j][k]
+                            + (1 - beta1) * delta_hidden3[k] * hidden2_input[j]
+                        v_hidden2_hidden3[j][k] = beta2 * v_hidden2_hidden3[j][k]
+                            + (1 - beta2) * (delta_hidden3[k] * hidden2_input[j]) ^ 2
+                        m_hat = m_hidden2_hidden3[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden2_hidden3[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden2_hidden3[j][k] = weight_decay * weights_hidden2_hidden3[j][k]
+                        weights_hidden2_hidden3[j][k] = weights_hidden2_hidden3[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden2_hidden3[j][k])
+                    end
+                end
+
+                for j = 1, hidden1_size do
+                    for k = 1, hidden2_size do
+                        m_hidden1_hidden2[j][k] = beta1 * m_hidden1_hidden2[j][k]
+                            + (1 - beta1) * delta_hidden2[k] * hidden1_input[j]
+                        v_hidden1_hidden2[j][k] = beta2 * v_hidden1_hidden2[j][k]
+                            + (1 - beta2) * (delta_hidden2[k] * hidden1_input[j]) ^ 2
+                        m_hat = m_hidden1_hidden2[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden1_hidden2[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden1_hidden2[j][k] = weight_decay * weights_hidden1_hidden2[j][k]
+                        weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden1_hidden2[j][k])
+                    end
+                end
+
+                for j = 1, input_size do
+                    for k = 1, hidden1_size do
+                        m_input_hidden1[j][k] = beta1 * m_input_hidden1[j][k]
+                            + (1 - beta1) * delta_hidden1[k] * x_train[i][j]
+                        v_input_hidden1[j][k] = beta2 * v_input_hidden1[j][k]
+                            + (1 - beta2) * (delta_hidden1[k] * x_train[i][j]) ^ 2
+                        m_hat = m_input_hidden1[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_input_hidden1[j][k] / (1 - beta2 ^ epoch)
+                        wd_input_hidden1[j][k] = weight_decay * weights_input_hidden1[j][k]
+                        weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_input_hidden1[j][k])
+                    end
+                end
+            end
+        end
+
+        -- Testowanie sieci
+        for i = 1, #x_test do
+            print("")
+
+            hidden1_input = {}
+            hidden2_input = {}
+            hidden3_input = {}
+            hidden3_output = {}
+            final_input = {}
+
+            for j = 1, hidden1_size do
+                hidden1_input[j] = 0
+                for k = 1, input_size do
+                    hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
+                end
+                hidden1_input[j] = activation_input(hidden1_input[j])
+            end
+
+            for j = 1, hidden2_size do
+                hidden2_input[j] = 0
+                for k = 1, hidden1_size do
+                    hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                end
+                hidden2_input[j] = activation_hd(hidden2_input[j])
+            end
+
+            for j = 1, hidden3_size do
+                hidden3_input[j] = 0
+                for k = 1, hidden2_size do
+                    hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+                end
+                hidden3_input[j] = activation_hd(hidden3_input[j])
+            end
+
+            for j = 1, hidden3_size do
+                hidden3_output[j] = activation_hd(hidden3_input[j])
+            end
+
+            final_input[1] = 0
+            for j = 1, hidden3_size do
+                final_input[1] = final_input[1] + hidden3_output[j] * weights_hidden3_output[j]
+            end
+            final_output = activation_output(final_input[1])
+
+            print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
+            print("Predicted output:" .. red, final_output .. reset)
+        end
+    end
+
+    if hidden_layers == 4 then
+        weights_input_hidden1 = {}
+        weights_hidden1_hidden2 = {}
+        weights_hidden2_hidden3 = {}
+        weights_hidden3_hidden4 = {}
+        weights_hidden4_output = {}
+
+        for i = 1, input_size do
+            weights_input_hidden1[i] = {}
+            for j = 1, hidden1_size do
+                weights_input_hidden1[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden1_size do
+            weights_hidden1_hidden2[i] = {}
+            for j = 1, hidden2_size do
+                weights_hidden1_hidden2[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden2_size do
+            weights_hidden2_hidden3[i] = {}
+            for j = 1, hidden3_size do
+                weights_hidden2_hidden3[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden3_size do
+            weights_hidden3_hidden4[i] = {}
+            for j = 1, hidden4_size do
+                weights_hidden3_hidden4[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden4_size do
+            weights_hidden4_output[i] = math.random()
+        end
+
+        -- Inicjalizacja zmiennych AdamW
+        m_input_hidden1 = {}
+        v_input_hidden1 = {}
+        m_hidden1_hidden2 = {}
+        v_hidden1_hidden2 = {}
+        m_hidden2_hidden3 = {}
+        v_hidden2_hidden3 = {}
+        m_hidden3_hidden4 = {}
+        v_hidden3_hidden4 = {}
+        m_hidden4_output = {}
+        v_hidden4_output = {}
+        wd_input_hidden1 = {}
+        wd_hidden1_hidden2 = {}
+        wd_hidden2_hidden3 = {}
+        wd_hidden3_hidden4 = {}
+        wd_hidden4_output = {}
+
+        for i = 1, input_size do
+            m_input_hidden1[i] = {}
+            v_input_hidden1[i] = {}
+            wd_input_hidden1[i] = {}
+            for j = 1, hidden1_size do
+                m_input_hidden1[i][j] = 0
+                v_input_hidden1[i][j] = 0
+                wd_input_hidden1[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden1_size do
+            m_hidden1_hidden2[i] = {}
+            v_hidden1_hidden2[i] = {}
+            wd_hidden1_hidden2[i] = {}
+            for j = 1, hidden2_size do
+                m_hidden1_hidden2[i][j] = 0
+                v_hidden1_hidden2[i][j] = 0
+                wd_hidden1_hidden2[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden2_size do
+            m_hidden2_hidden3[i] = {}
+            v_hidden2_hidden3[i] = {}
+            wd_hidden2_hidden3[i] = {}
+            for j = 1, hidden3_size do
+                m_hidden2_hidden3[i][j] = 0
+                v_hidden2_hidden3[i][j] = 0
+                wd_hidden2_hidden3[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden3_size do
+            m_hidden3_hidden4[i] = {}
+            v_hidden3_hidden4[i] = {}
+            wd_hidden3_hidden4[i] = {}
+            for j = 1, hidden4_size do
+                m_hidden3_hidden4[i][j] = 0
+                v_hidden3_hidden4[i][j] = 0
+                wd_hidden3_hidden4[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden4_size do
+            m_hidden4_output[i] = 0
+            v_hidden4_output[i] = 0
+            wd_hidden4_output[i] = 0
+        end
+
+        -- Uczenie sieci
+        epochs = iterations
+        beta1 = 0.9
+        beta2 = 0.999
+        epsilon = 1e-8
+        learning_rate = 0.001
+        weight_decay = 0.001
+
+        for epoch = 1, epochs do
+            for i = 1, #x_train do
+                -- Forward pass
+                hidden1_input = {}
+                hidden2_input = {}
+                hidden3_input = {}
+                hidden4_input = {}
+                hidden4_output = {}
+                final_input = {}
+
+                for j = 1, hidden1_size do
+                    hidden1_input[j] = 0
+                    for k = 1, input_size do
+                        hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    end
+                    hidden1_input[j] = activation_input(hidden1_input[j])
+                end
+
+                for j = 1, hidden2_size do
+                    hidden2_input[j] = 0
+                    for k = 1, hidden1_size do
+                        hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                    end
+                    hidden2_input[j] = activation_hd(hidden2_input[j])
+                end
+
+                for j = 1, hidden3_size do
+                    hidden3_input[j] = 0
+                    for k = 1, hidden2_size do
+                        hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+                    end
+                    hidden3_input[j] = activation_hd(hidden3_input[j])
+                end
+
+                for j = 1, hidden4_size do
+                    hidden4_input[j] = 0
+                    for k = 1, hidden3_size do
+                        hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
+                    end
+                    hidden4_input[j] = activation_hd(hidden4_input[j])
+                end
+
+                for j = 1, hidden4_size do
+                    hidden4_output[j] = activation_hd(hidden4_input[j])
+                end
+
+                final_input[1] = 0
+                for j = 1, hidden4_size do
+                    final_input[1] = final_input[1] + hidden4_output[j] * weights_hidden4_output[j]
+                end
+                final_output = activation_output(final_input[1])
+
+                -- Obliczenie błędu
+                error = y_train[i] - final_output
+
+                -- Backpropagation
+                delta_output = error * final_output * (1 - final_output)
+
+                delta_hidden4 = {}
+                for j = 1, hidden4_size do
+                    delta_hidden4[j] = delta_output * weights_hidden4_output[j] * (1 - hidden4_output[j])
+                end
+
+                delta_hidden3 = {}
+                for j = 1, hidden3_size do
+                    delta_hidden3[j] = 0
+                    for k = 1, hidden4_size do
+                        delta_hidden3[j] = delta_hidden3[j]
+                            + delta_hidden4[k] * weights_hidden3_hidden4[j][k] * (1 - hidden3_input[j])
+                    end
+                end
+
+                delta_hidden2 = {}
+                for j = 1, hidden2_size do
+                    delta_hidden2[j] = 0
+                    for k = 1, hidden3_size do
+                        delta_hidden2[j] = delta_hidden2[j]
+                            + delta_hidden3[k] * weights_hidden2_hidden3[j][k] * (1 - hidden2_input[j])
+                    end
+                end
+
+                delta_hidden1 = {}
+                for j = 1, hidden1_size do
+                    delta_hidden1[j] = 0
+                    for k = 1, hidden2_size do
+                        delta_hidden1[j] = delta_hidden1[j]
+                            + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
+                    end
+                end
+
+                -- Aktualizacja wag zgodnie z AdamW
+                for j = 1, hidden4_size do
+                    m_hidden4_output[j] = beta1 * m_hidden4_output[j] + (1 - beta1) * delta_output * hidden4_output[j]
+                    v_hidden4_output[j] = beta2 * v_hidden4_output[j]
+                        + (1 - beta2) * (delta_output * hidden4_output[j]) ^ 2
+                    m_hat = m_hidden4_output[j] / (1 - beta1 ^ epoch)
+                    v_hat = v_hidden4_output[j] / (1 - beta2 ^ epoch)
+                    wd_hidden4_output[j] = weight_decay * weights_hidden4_output[j]
+                    weights_hidden4_output[j] = weights_hidden4_output[j]
+                        + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden4_output[j])
+                end
+
+                for j = 1, hidden3_size do
+                    for k = 1, hidden4_size do
+                        m_hidden3_hidden4[j][k] = beta1 * m_hidden3_hidden4[j][k]
+                            + (1 - beta1) * delta_hidden4[k] * hidden3_input[j]
+                        v_hidden3_hidden4[j][k] = beta2 * v_hidden3_hidden4[j][k]
+                            + (1 - beta2) * (delta_hidden4[k] * hidden3_input[j]) ^ 2
+                        m_hat = m_hidden3_hidden4[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden3_hidden4[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden3_hidden4[j][k] = weight_decay * weights_hidden3_hidden4[j][k]
+                        weights_hidden3_hidden4[j][k] = weights_hidden3_hidden4[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden3_hidden4[j][k])
+                    end
+                end
+
+                for j = 1, hidden2_size do
+                    for k = 1, hidden3_size do
+                        m_hidden2_hidden3[j][k] = beta1 * m_hidden2_hidden3[j][k]
+                            + (1 - beta1) * delta_hidden3[k] * hidden2_input[j]
+                        v_hidden2_hidden3[j][k] = beta2 * v_hidden2_hidden3[j][k]
+                            + (1 - beta2) * (delta_hidden3[k] * hidden2_input[j]) ^ 2
+                        m_hat = m_hidden2_hidden3[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden2_hidden3[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden2_hidden3[j][k] = weight_decay * weights_hidden2_hidden3[j][k]
+                        weights_hidden2_hidden3[j][k] = weights_hidden2_hidden3[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden2_hidden3[j][k])
+                    end
+                end
+
+                for j = 1, hidden1_size do
+                    for k = 1, hidden2_size do
+                        m_hidden1_hidden2[j][k] = beta1 * m_hidden1_hidden2[j][k]
+                            + (1 - beta1) * delta_hidden2[k] * hidden1_input[j]
+                        v_hidden1_hidden2[j][k] = beta2 * v_hidden1_hidden2[j][k]
+                            + (1 - beta2) * (delta_hidden2[k] * hidden1_input[j]) ^ 2
+                        m_hat = m_hidden1_hidden2[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden1_hidden2[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden1_hidden2[j][k] = weight_decay * weights_hidden1_hidden2[j][k]
+                        weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden1_hidden2[j][k])
+                    end
+                end
+
+                for j = 1, input_size do
+                    for k = 1, hidden1_size do
+                        m_input_hidden1[j][k] = beta1 * m_input_hidden1[j][k]
+                            + (1 - beta1) * delta_hidden1[k] * x_train[i][j]
+                        v_input_hidden1[j][k] = beta2 * v_input_hidden1[j][k]
+                            + (1 - beta2) * (delta_hidden1[k] * x_train[i][j]) ^ 2
+                        m_hat = m_input_hidden1[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_input_hidden1[j][k] / (1 - beta2 ^ epoch)
+                        wd_input_hidden1[j][k] = weight_decay * weights_input_hidden1[j][k]
+                        weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_input_hidden1[j][k])
+                    end
+                end
+            end
+        end
+
+        -- Testowanie sieci
+        for i = 1, #x_test do
+            print("")
+
+            hidden1_input = {}
+            hidden2_input = {}
+            hidden3_input = {}
+            hidden4_input = {}
+            hidden4_output = {}
+            final_input = {}
+
+            for j = 1, hidden1_size do
+                hidden1_input[j] = 0
+                for k = 1, input_size do
+                    hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
+                end
+                hidden1_input[j] = activation_input(hidden1_input[j])
+            end
+
+            for j = 1, hidden2_size do
+                hidden2_input[j] = 0
+                for k = 1, hidden1_size do
+                    hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                end
+                hidden2_input[j] = activation_hd(hidden2_input[j])
+            end
+
+            for j = 1, hidden3_size do
+                hidden3_input[j] = 0
+                for k = 1, hidden2_size do
+                    hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+                end
+                hidden3_input[j] = activation_hd(hidden3_input[j])
+            end
+
+            for j = 1, hidden4_size do
+                hidden4_input[j] = 0
+                for k = 1, hidden3_size do
+                    hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
+                end
+                hidden4_input[j] = activation_hd(hidden4_input[j])
+            end
+
+            for j = 1, hidden4_size do
+                hidden4_output[j] = activation_hd(hidden4_input[j])
+            end
+
+            final_input[1] = 0
+            for j = 1, hidden4_size do
+                final_input[1] = final_input[1] + hidden4_output[j] * weights_hidden4_output[j]
+            end
+            final_output = activation_output(final_input[1])
+
+            print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
+            print("Predicted output:" .. red, final_output .. reset)
+        end
+    end
+
+    if hidden_layers == 5 then
+        weights_input_hidden1 = {}
+        weights_hidden1_hidden2 = {}
+        weights_hidden2_hidden3 = {}
+        weights_hidden3_hidden4 = {}
+        weights_hidden4_hidden5 = {}
+        weights_hidden5_output = {}
+
+        for i = 1, input_size do
+            weights_input_hidden1[i] = {}
+            for j = 1, hidden1_size do
+                weights_input_hidden1[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden1_size do
+            weights_hidden1_hidden2[i] = {}
+            for j = 1, hidden2_size do
+                weights_hidden1_hidden2[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden2_size do
+            weights_hidden2_hidden3[i] = {}
+            for j = 1, hidden3_size do
+                weights_hidden2_hidden3[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden3_size do
+            weights_hidden3_hidden4[i] = {}
+            for j = 1, hidden4_size do
+                weights_hidden3_hidden4[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden4_size do
+            weights_hidden4_hidden5[i] = {}
+            for j = 1, hidden5_size do
+                weights_hidden4_hidden5[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden5_size do
+            weights_hidden5_output[i] = math.random()
+        end
+
+        -- Inicjalizacja zmiennych AdamW
+        m_input_hidden1 = {}
+        v_input_hidden1 = {}
+        m_hidden1_hidden2 = {}
+        v_hidden1_hidden2 = {}
+        m_hidden2_hidden3 = {}
+        v_hidden2_hidden3 = {}
+        m_hidden3_hidden4 = {}
+        v_hidden3_hidden4 = {}
+        m_hidden4_hidden5 = {}
+        v_hidden4_hidden5 = {}
+        m_hidden5_output = {}
+        v_hidden5_output = {}
+        wd_input_hidden1 = {}
+        wd_hidden1_hidden2 = {}
+        wd_hidden2_hidden3 = {}
+        wd_hidden3_hidden4 = {}
+        wd_hidden4_hidden5 = {}
+        wd_hidden5_output = {}
+
+        for i = 1, input_size do
+            m_input_hidden1[i] = {}
+            v_input_hidden1[i] = {}
+            wd_input_hidden1[i] = {}
+            for j = 1, hidden1_size do
+                m_input_hidden1[i][j] = 0
+                v_input_hidden1[i][j] = 0
+                wd_input_hidden1[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden1_size do
+            m_hidden1_hidden2[i] = {}
+            v_hidden1_hidden2[i] = {}
+            wd_hidden1_hidden2[i] = {}
+            for j = 1, hidden2_size do
+                m_hidden1_hidden2[i][j] = 0
+                v_hidden1_hidden2[i][j] = 0
+                wd_hidden1_hidden2[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden2_size do
+            m_hidden2_hidden3[i] = {}
+            v_hidden2_hidden3[i] = {}
+            wd_hidden2_hidden3[i] = {}
+            for j = 1, hidden3_size do
+                m_hidden2_hidden3[i][j] = 0
+                v_hidden2_hidden3[i][j] = 0
+                wd_hidden2_hidden3[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden3_size do
+            m_hidden3_hidden4[i] = {}
+            v_hidden3_hidden4[i] = {}
+            wd_hidden3_hidden4[i] = {}
+            for j = 1, hidden4_size do
+                m_hidden3_hidden4[i][j] = 0
+                v_hidden3_hidden4[i][j] = 0
+                wd_hidden3_hidden4[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden4_size do
+            m_hidden4_hidden5[i] = {}
+            v_hidden4_hidden5[i] = {}
+            wd_hidden4_hidden5[i] = {}
+            for j = 1, hidden5_size do
+                m_hidden4_hidden5[i][j] = 0
+                v_hidden4_hidden5[i][j] = 0
+                wd_hidden4_hidden5[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden5_size do
+            m_hidden5_output[i] = 0
+            v_hidden5_output[i] = 0
+            wd_hidden5_output[i] = 0
+        end
+
+        -- Uczenie sieci
+        epochs = iterations
+        beta1 = 0.9
+        beta2 = 0.999
+        epsilon = 1e-8
+        learning_rate = 0.001
+        weight_decay = 0.001
+
+        for epoch = 1, epochs do
+            for i = 1, #x_train do
+                -- Forward pass
+                hidden1_input = {}
+                hidden2_input = {}
+                hidden3_input = {}
+                hidden4_input = {}
+                hidden5_input = {}
+                hidden5_output = {}
+                final_input = {}
+
+                for j = 1, hidden1_size do
+                    hidden1_input[j] = 0
+                    for k = 1, input_size do
+                        hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    end
+                    hidden1_input[j] = activation_input(hidden1_input[j])
+                end
+
+                for j = 1, hidden2_size do
+                    hidden2_input[j] = 0
+                    for k = 1, hidden1_size do
+                        hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                    end
+                    hidden2_input[j] = activation_hd(hidden2_input[j])
+                end
+
+                for j = 1, hidden3_size do
+                    hidden3_input[j] = 0
+                    for k = 1, hidden2_size do
+                        hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+                    end
+                    hidden3_input[j] = activation_hd(hidden3_input[j])
+                end
+
+                for j = 1, hidden4_size do
+                    hidden4_input[j] = 0
+                    for k = 1, hidden3_size do
+                        hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
+                    end
+                    hidden4_input[j] = activation_hd(hidden4_input[j])
+                end
+
+                for j = 1, hidden5_size do
+                    hidden5_input[j] = 0
+                    for k = 1, hidden4_size do
+                        hidden5_input[j] = hidden5_input[j] + hidden4_input[k] * weights_hidden4_hidden5[k][j]
+                    end
+                    hidden5_input[j] = activation_hd(hidden5_input[j])
+                end
+
+                for j = 1, hidden5_size do
+                    hidden5_output[j] = activation_hd(hidden5_input[j])
+                end
+
+                final_input[1] = 0
+                for j = 1, hidden5_size do
+                    final_input[1] = final_input[1] + hidden5_output[j] * weights_hidden5_output[j]
+                end
+                final_output = activation_output(final_input[1])
+
+                -- Obliczenie błędu
+                error = y_train[i] - final_output
+
+                -- Backpropagation
+                delta_output = error * final_output * (1 - final_output)
+
+                delta_hidden5 = {}
+                for j = 1, hidden5_size do
+                    delta_hidden5[j] = delta_output * weights_hidden5_output[j] * (1 - hidden5_output[j])
+                end
+
+                delta_hidden4 = {}
+                for j = 1, hidden4_size do
+                    delta_hidden4[j] = 0
+                    for k = 1, hidden5_size do
+                        delta_hidden4[j] = delta_hidden4[j]
+                            + delta_hidden5[k] * weights_hidden4_hidden5[j][k] * (1 - hidden4_input[j])
+                    end
+                end
+
+                delta_hidden3 = {}
+                for j = 1, hidden3_size do
+                    delta_hidden3[j] = 0
+                    for k = 1, hidden4_size do
+                        delta_hidden3[j] = delta_hidden3[j]
+                            + delta_hidden4[k] * weights_hidden3_hidden4[j][k] * (1 - hidden3_input[j])
+                    end
+                end
+
+                delta_hidden2 = {}
+                for j = 1, hidden2_size do
+                    delta_hidden2[j] = 0
+                    for k = 1, hidden3_size do
+                        delta_hidden2[j] = delta_hidden2[j]
+                            + delta_hidden3[k] * weights_hidden2_hidden3[j][k] * (1 - hidden2_input[j])
+                    end
+                end
+
+                delta_hidden1 = {}
+                for j = 1, hidden1_size do
+                    delta_hidden1[j] = 0
+                    for k = 1, hidden2_size do
+                        delta_hidden1[j] = delta_hidden1[j]
+                            + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
+                    end
+                end
+
+                -- Aktualizacja wag zgodnie z AdamW
+                for j = 1, hidden5_size do
+                    m_hidden5_output[j] = beta1 * m_hidden5_output[j] + (1 - beta1) * delta_output * hidden5_output[j]
+                    v_hidden5_output[j] = beta2 * v_hidden5_output[j]
+                        + (1 - beta2) * (delta_output * hidden5_output[j]) ^ 2
+                    m_hat = m_hidden5_output[j] / (1 - beta1 ^ epoch)
+                    v_hat = v_hidden5_output[j] / (1 - beta2 ^ epoch)
+                    wd_hidden5_output[j] = weight_decay * weights_hidden5_output[j]
+                    weights_hidden5_output[j] = weights_hidden5_output[j]
+                        + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden5_output[j])
+                end
+
+                for j = 1, hidden4_size do
+                    for k = 1, hidden5_size do
+                        m_hidden4_hidden5[j][k] = beta1 * m_hidden4_hidden5[j][k]
+                            + (1 - beta1) * delta_hidden5[k] * hidden4_input[j]
+                        v_hidden4_hidden5[j][k] = beta2 * v_hidden4_hidden5[j][k]
+                            + (1 - beta2) * (delta_hidden5[k] * hidden4_input[j]) ^ 2
+                        m_hat = m_hidden4_hidden5[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden4_hidden5[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden4_hidden5[j][k] = weight_decay * weights_hidden4_hidden5[j][k]
+                        weights_hidden4_hidden5[j][k] = weights_hidden4_hidden5[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden4_hidden5[j][k])
+                    end
+                end
+
+                for j = 1, hidden3_size do
+                    for k = 1, hidden4_size do
+                        m_hidden3_hidden4[j][k] = beta1 * m_hidden3_hidden4[j][k]
+                            + (1 - beta1) * delta_hidden4[k] * hidden3_input[j]
+                        v_hidden3_hidden4[j][k] = beta2 * v_hidden3_hidden4[j][k]
+                            + (1 - beta2) * (delta_hidden4[k] * hidden3_input[j]) ^ 2
+                        m_hat = m_hidden3_hidden4[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden3_hidden4[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden3_hidden4[j][k] = weight_decay * weights_hidden3_hidden4[j][k]
+                        weights_hidden3_hidden4[j][k] = weights_hidden3_hidden4[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden3_hidden4[j][k])
+                    end
+                end
+
+                for j = 1, hidden2_size do
+                    for k = 1, hidden3_size do
+                        m_hidden2_hidden3[j][k] = beta1 * m_hidden2_hidden3[j][k]
+                            + (1 - beta1) * delta_hidden3[k] * hidden2_input[j]
+                        v_hidden2_hidden3[j][k] = beta2 * v_hidden2_hidden3[j][k]
+                            + (1 - beta2) * (delta_hidden3[k] * hidden2_input[j]) ^ 2
+                        m_hat = m_hidden2_hidden3[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden2_hidden3[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden2_hidden3[j][k] = weight_decay * weights_hidden2_hidden3[j][k]
+                        weights_hidden2_hidden3[j][k] = weights_hidden2_hidden3[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden2_hidden3[j][k])
+                    end
+                end
+
+                for j = 1, hidden1_size do
+                    for k = 1, hidden2_size do
+                        m_hidden1_hidden2[j][k] = beta1 * m_hidden1_hidden2[j][k]
+                            + (1 - beta1) * delta_hidden2[k] * hidden1_input[j]
+                        v_hidden1_hidden2[j][k] = beta2 * v_hidden1_hidden2[j][k]
+                            + (1 - beta2) * (delta_hidden2[k] * hidden1_input[j]) ^ 2
+                        m_hat = m_hidden1_hidden2[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden1_hidden2[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden1_hidden2[j][k] = weight_decay * weights_hidden1_hidden2[j][k]
+                        weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden1_hidden2[j][k])
+                    end
+                end
+
+                for j = 1, input_size do
+                    for k = 1, hidden1_size do
+                        m_input_hidden1[j][k] = beta1 * m_input_hidden1[j][k]
+                            + (1 - beta1) * delta_hidden1[k] * x_train[i][j]
+                        v_input_hidden1[j][k] = beta2 * v_input_hidden1[j][k]
+                            + (1 - beta2) * (delta_hidden1[k] * x_train[i][j]) ^ 2
+                        m_hat = m_input_hidden1[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_input_hidden1[j][k] / (1 - beta2 ^ epoch)
+                        wd_input_hidden1[j][k] = weight_decay * weights_input_hidden1[j][k]
+                        weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_input_hidden1[j][k])
+                    end
+                end
+            end
+        end
+
+        -- Testowanie sieci
+        for i = 1, #x_test do
+            print("")
+
+            hidden1_input = {}
+            hidden2_input = {}
+            hidden3_input = {}
+            hidden4_input = {}
+            hidden5_input = {}
+            hidden5_output = {}
+            final_input = {}
+
+            for j = 1, hidden1_size do
+                hidden1_input[j] = 0
+                for k = 1, input_size do
+                    hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
+                end
+                hidden1_input[j] = activation_input(hidden1_input[j])
+            end
+
+            for j = 1, hidden2_size do
+                hidden2_input[j] = 0
+                for k = 1, hidden1_size do
+                    hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                end
+                hidden2_input[j] = activation_hd(hidden2_input[j])
+            end
+
+            for j = 1, hidden3_size do
+                hidden3_input[j] = 0
+                for k = 1, hidden2_size do
+                    hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+                end
+                hidden3_input[j] = activation_hd(hidden3_input[j])
+            end
+
+            for j = 1, hidden4_size do
+                hidden4_input[j] = 0
+                for k = 1, hidden3_size do
+                    hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
+                end
+                hidden4_input[j] = activation_hd(hidden4_input[j])
+            end
+
+            for j = 1, hidden5_size do
+                hidden5_input[j] = 0
+                for k = 1, hidden4_size do
+                    hidden5_input[j] = hidden5_input[j] + hidden4_input[k] * weights_hidden4_hidden5[k][j]
+                end
+                hidden5_input[j] = activation_hd(hidden5_input[j])
+            end
+
+            for j = 1, hidden5_size do
+                hidden5_output[j] = activation_hd(hidden5_input[j])
+            end
+
+            final_input[1] = 0
+            for j = 1, hidden5_size do
+                final_input[1] = final_input[1] + hidden5_output[j] * weights_hidden5_output[j]
+            end
+            final_output = activation_output(final_input[1])
+
+            print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
+            print("Predicted output:" .. red, final_output .. reset)
+        end
+    end
+
+    if hidden_layers == 6 then
+        weights_input_hidden1 = {}
+        weights_hidden1_hidden2 = {}
+        weights_hidden2_hidden3 = {}
+        weights_hidden3_hidden4 = {}
+        weights_hidden4_hidden5 = {}
+        weights_hidden5_hidden6 = {}
+        weights_hidden6_output = {}
+
+        for i = 1, input_size do
+            weights_input_hidden1[i] = {}
+            for j = 1, hidden1_size do
+                weights_input_hidden1[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden1_size do
+            weights_hidden1_hidden2[i] = {}
+            for j = 1, hidden2_size do
+                weights_hidden1_hidden2[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden2_size do
+            weights_hidden2_hidden3[i] = {}
+            for j = 1, hidden3_size do
+                weights_hidden2_hidden3[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden3_size do
+            weights_hidden3_hidden4[i] = {}
+            for j = 1, hidden4_size do
+                weights_hidden3_hidden4[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden4_size do
+            weights_hidden4_hidden5[i] = {}
+            for j = 1, hidden5_size do
+                weights_hidden4_hidden5[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden5_size do
+            weights_hidden5_hidden6[i] = {}
+            for j = 1, hidden6_size do
+                weights_hidden5_hidden6[i][j] = math.random()
+            end
+        end
+
+        for i = 1, hidden6_size do
+            weights_hidden6_output[i] = math.random()
+        end
+
+        -- Inicjalizacja zmiennych AdamW
+        m_input_hidden1 = {}
+        v_input_hidden1 = {}
+        m_hidden1_hidden2 = {}
+        v_hidden1_hidden2 = {}
+        m_hidden2_hidden3 = {}
+        v_hidden2_hidden3 = {}
+        m_hidden3_hidden4 = {}
+        v_hidden3_hidden4 = {}
+        m_hidden4_hidden5 = {}
+        v_hidden4_hidden5 = {}
+        m_hidden5_hidden6 = {}
+        v_hidden5_hidden6 = {}
+        m_hidden6_output = {}
+        v_hidden6_output = {}
+        wd_input_hidden1 = {}
+        wd_hidden1_hidden2 = {}
+        wd_hidden2_hidden3 = {}
+        wd_hidden3_hidden4 = {}
+        wd_hidden4_hidden5 = {}
+        wd_hidden5_hidden6 = {}
+        wd_hidden6_output = {}
+
+        for i = 1, input_size do
+            m_input_hidden1[i] = {}
+            v_input_hidden1[i] = {}
+            wd_input_hidden1[i] = {}
+            for j = 1, hidden1_size do
+                m_input_hidden1[i][j] = 0
+                v_input_hidden1[i][j] = 0
+                wd_input_hidden1[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden1_size do
+            m_hidden1_hidden2[i] = {}
+            v_hidden1_hidden2[i] = {}
+            wd_hidden1_hidden2[i] = {}
+            for j = 1, hidden2_size do
+                m_hidden1_hidden2[i][j] = 0
+                v_hidden1_hidden2[i][j] = 0
+                wd_hidden1_hidden2[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden2_size do
+            m_hidden2_hidden3[i] = {}
+            v_hidden2_hidden3[i] = {}
+            wd_hidden2_hidden3[i] = {}
+            for j = 1, hidden3_size do
+                m_hidden2_hidden3[i][j] = 0
+                v_hidden2_hidden3[i][j] = 0
+                wd_hidden2_hidden3[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden3_size do
+            m_hidden3_hidden4[i] = {}
+            v_hidden3_hidden4[i] = {}
+            wd_hidden3_hidden4[i] = {}
+            for j = 1, hidden4_size do
+                m_hidden3_hidden4[i][j] = 0
+                v_hidden3_hidden4[i][j] = 0
+                wd_hidden3_hidden4[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden4_size do
+            m_hidden4_hidden5[i] = {}
+            v_hidden4_hidden5[i] = {}
+            wd_hidden4_hidden5[i] = {}
+            for j = 1, hidden5_size do
+                m_hidden4_hidden5[i][j] = 0
+                v_hidden4_hidden5[i][j] = 0
+                wd_hidden4_hidden5[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden5_size do
+            m_hidden5_hidden6[i] = {}
+            v_hidden5_hidden6[i] = {}
+            wd_hidden5_hidden6[i] = {}
+            for j = 1, hidden6_size do
+                m_hidden5_hidden6[i][j] = 0
+                v_hidden5_hidden6[i][j] = 0
+                wd_hidden5_hidden6[i][j] = 0
+            end
+        end
+
+        for i = 1, hidden6_size do
+            m_hidden6_output[i] = 0
+            v_hidden6_output[i] = 0
+            wd_hidden6_output[i] = 0
+        end
+
+        -- Uczenie sieci
+        epochs = iterations
+        beta1 = 0.9
+        beta2 = 0.999
+        epsilon = 1e-8
+        learning_rate = 0.001
+        weight_decay = 0.001
+
+        for epoch = 1, epochs do
+            for i = 1, #x_train do
+                -- Forward pass
+                hidden1_input = {}
+                hidden2_input = {}
+                hidden3_input = {}
+                hidden4_input = {}
+                hidden5_input = {}
+                hidden6_input = {}
+                hidden6_output = {}
+                final_input = {}
+
+                for j = 1, hidden1_size do
+                    hidden1_input[j] = 0
+                    for k = 1, input_size do
+                        hidden1_input[j] = hidden1_input[j] + x_train[i][k] * weights_input_hidden1[k][j]
+                    end
+                    hidden1_input[j] = activation_input(hidden1_input[j])
+                end
+
+                for j = 1, hidden2_size do
+                    hidden2_input[j] = 0
+                    for k = 1, hidden1_size do
+                        hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                    end
+                    hidden2_input[j] = activation_hd(hidden2_input[j])
+                end
+
+                for j = 1, hidden3_size do
+                    hidden3_input[j] = 0
+                    for k = 1, hidden2_size do
+                        hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+                    end
+                    hidden3_input[j] = activation_hd(hidden3_input[j])
+                end
+
+                for j = 1, hidden4_size do
+                    hidden4_input[j] = 0
+                    for k = 1, hidden3_size do
+                        hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
+                    end
+                    hidden4_input[j] = activation_hd(hidden4_input[j])
+                end
+
+                for j = 1, hidden5_size do
+                    hidden5_input[j] = 0
+                    for k = 1, hidden4_size do
+                        hidden5_input[j] = hidden5_input[j] + hidden4_input[k] * weights_hidden4_hidden5[k][j]
+                    end
+                    hidden5_input[j] = activation_hd(hidden5_input[j])
+                end
+
+                for j = 1, hidden6_size do
+                    hidden6_input[j] = 0
+                    for k = 1, hidden5_size do
+                        hidden6_input[j] = hidden6_input[j] + hidden5_input[k] * weights_hidden5_hidden6[k][j]
+                    end
+                    hidden6_input[j] = activation_hd(hidden6_input[j])
+                end
+
+                for j = 1, hidden6_size do
+                    hidden6_output[j] = activation_hd(hidden6_input[j])
+                end
+
+                final_input[1] = 0
+                for j = 1, hidden6_size do
+                    final_input[1] = final_input[1] + hidden6_output[j] * weights_hidden6_output[j]
+                end
+                final_output = activation_output(final_input[1])
+
+                -- Obliczenie błędu
+                error = y_train[i] - final_output
+
+                -- Backpropagation
+                delta_output = error * final_output * (1 - final_output)
+
+                delta_hidden6 = {}
+                for j = 1, hidden6_size do
+                    delta_hidden6[j] = delta_output * weights_hidden6_output[j] * (1 - hidden6_output[j])
+                end
+
+                delta_hidden5 = {}
+                for j = 1, hidden5_size do
+                    delta_hidden5[j] = 0
+                    for k = 1, hidden6_size do
+                        delta_hidden5[j] = delta_hidden5[j]
+                            + delta_hidden6[k] * weights_hidden5_hidden6[j][k] * (1 - hidden5_input[j])
+                    end
+                end
+
+                delta_hidden4 = {}
+                for j = 1, hidden4_size do
+                    delta_hidden4[j] = 0
+                    for k = 1, hidden5_size do
+                        delta_hidden4[j] = delta_hidden4[j]
+                            + delta_hidden5[k] * weights_hidden4_hidden5[j][k] * (1 - hidden4_input[j])
+                    end
+                end
+
+                delta_hidden3 = {}
+                for j = 1, hidden3_size do
+                    delta_hidden3[j] = 0
+                    for k = 1, hidden4_size do
+                        delta_hidden3[j] = delta_hidden3[j]
+                            + delta_hidden4[k] * weights_hidden3_hidden4[j][k] * (1 - hidden3_input[j])
+                    end
+                end
+
+                delta_hidden2 = {}
+                for j = 1, hidden2_size do
+                    delta_hidden2[j] = 0
+                    for k = 1, hidden3_size do
+                        delta_hidden2[j] = delta_hidden2[j]
+                            + delta_hidden3[k] * weights_hidden2_hidden3[j][k] * (1 - hidden2_input[j])
+                    end
+                end
+
+                delta_hidden1 = {}
+                for j = 1, hidden1_size do
+                    delta_hidden1[j] = 0
+                    for k = 1, hidden2_size do
+                        delta_hidden1[j] = delta_hidden1[j]
+                            + delta_hidden2[k] * weights_hidden1_hidden2[j][k] * (1 - hidden1_input[j])
+                    end
+                end
+
+                -- Aktualizacja wag zgodnie z AdamW
+                for j = 1, hidden6_size do
+                    m_hidden6_output[j] = beta1 * m_hidden6_output[j] + (1 - beta1) * delta_output * hidden6_output[j]
+                    v_hidden6_output[j] = beta2 * v_hidden6_output[j]
+                        + (1 - beta2) * (delta_output * hidden6_output[j]) ^ 2
+                    m_hat = m_hidden6_output[j] / (1 - beta1 ^ epoch)
+                    v_hat = v_hidden6_output[j] / (1 - beta2 ^ epoch)
+                    wd_hidden6_output[j] = weight_decay * weights_hidden6_output[j]
+                    weights_hidden6_output[j] = weights_hidden6_output[j]
+                        + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden6_output[j])
+                end
+
+                for j = 1, hidden5_size do
+                    for k = 1, hidden6_size do
+                        m_hidden5_hidden6[j][k] = beta1 * m_hidden5_hidden6[j][k]
+                            + (1 - beta1) * delta_hidden6[k] * hidden5_input[j]
+                        v_hidden5_hidden6[j][k] = beta2 * v_hidden5_hidden6[j][k]
+                            + (1 - beta2) * (delta_hidden6[k] * hidden5_input[j]) ^ 2
+                        m_hat = m_hidden5_hidden6[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden5_hidden6[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden5_hidden6[j][k] = weight_decay * weights_hidden5_hidden6[j][k]
+                        weights_hidden5_hidden6[j][k] = weights_hidden5_hidden6[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden5_hidden6[j][k])
+                    end
+                end
+
+                for j = 1, hidden4_size do
+                    for k = 1, hidden5_size do
+                        m_hidden4_hidden5[j][k] = beta1 * m_hidden4_hidden5[j][k]
+                            + (1 - beta1) * delta_hidden5[k] * hidden4_input[j]
+                        v_hidden4_hidden5[j][k] = beta2 * v_hidden4_hidden5[j][k]
+                            + (1 - beta2) * (delta_hidden5[k] * hidden4_input[j]) ^ 2
+                        m_hat = m_hidden4_hidden5[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden4_hidden5[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden4_hidden5[j][k] = weight_decay * weights_hidden4_hidden5[j][k]
+                        weights_hidden4_hidden5[j][k] = weights_hidden4_hidden5[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden4_hidden5[j][k])
+                    end
+                end
+
+                for j = 1, hidden3_size do
+                    for k = 1, hidden4_size do
+                        m_hidden3_hidden4[j][k] = beta1 * m_hidden3_hidden4[j][k]
+                            + (1 - beta1) * delta_hidden4[k] * hidden3_input[j]
+                        v_hidden3_hidden4[j][k] = beta2 * v_hidden3_hidden4[j][k]
+                            + (1 - beta2) * (delta_hidden4[k] * hidden3_input[j]) ^ 2
+                        m_hat = m_hidden3_hidden4[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden3_hidden4[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden3_hidden4[j][k] = weight_decay * weights_hidden3_hidden4[j][k]
+                        weights_hidden3_hidden4[j][k] = weights_hidden3_hidden4[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden3_hidden4[j][k])
+                    end
+                end
+
+                for j = 1, hidden2_size do
+                    for k = 1, hidden3_size do
+                        m_hidden2_hidden3[j][k] = beta1 * m_hidden2_hidden3[j][k]
+                            + (1 - beta1) * delta_hidden3[k] * hidden2_input[j]
+                        v_hidden2_hidden3[j][k] = beta2 * v_hidden2_hidden3[j][k]
+                            + (1 - beta2) * (delta_hidden3[k] * hidden2_input[j]) ^ 2
+                        m_hat = m_hidden2_hidden3[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden2_hidden3[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden2_hidden3[j][k] = weight_decay * weights_hidden2_hidden3[j][k]
+                        weights_hidden2_hidden3[j][k] = weights_hidden2_hidden3[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden2_hidden3[j][k])
+                    end
+                end
+
+                for j = 1, hidden1_size do
+                    for k = 1, hidden2_size do
+                        m_hidden1_hidden2[j][k] = beta1 * m_hidden1_hidden2[j][k]
+                            + (1 - beta1) * delta_hidden2[k] * hidden1_input[j]
+                        v_hidden1_hidden2[j][k] = beta2 * v_hidden1_hidden2[j][k]
+                            + (1 - beta2) * (delta_hidden2[k] * hidden1_input[j]) ^ 2
+                        m_hat = m_hidden1_hidden2[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_hidden1_hidden2[j][k] / (1 - beta2 ^ epoch)
+                        wd_hidden1_hidden2[j][k] = weight_decay * weights_hidden1_hidden2[j][k]
+                        weights_hidden1_hidden2[j][k] = weights_hidden1_hidden2[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_hidden1_hidden2[j][k])
+                    end
+                end
+
+                for j = 1, input_size do
+                    for k = 1, hidden1_size do
+                        m_input_hidden1[j][k] = beta1 * m_input_hidden1[j][k]
+                            + (1 - beta1) * delta_hidden1[k] * x_train[i][j]
+                        v_input_hidden1[j][k] = beta2 * v_input_hidden1[j][k]
+                            + (1 - beta2) * (delta_hidden1[k] * x_train[i][j]) ^ 2
+                        m_hat = m_input_hidden1[j][k] / (1 - beta1 ^ epoch)
+                        v_hat = v_input_hidden1[j][k] / (1 - beta2 ^ epoch)
+                        wd_input_hidden1[j][k] = weight_decay * weights_input_hidden1[j][k]
+                        weights_input_hidden1[j][k] = weights_input_hidden1[j][k]
+                            + learning_rate * (m_hat / (math.sqrt(v_hat) + epsilon) - wd_input_hidden1[j][k])
+                    end
+                end
+            end
+        end
+
+        -- Testowanie sieci
+        for i = 1, #x_test do
+            print("")
+
+            hidden1_input = {}
+            hidden2_input = {}
+            hidden3_input = {}
+            hidden4_input = {}
+            hidden5_input = {}
+            hidden6_input = {}
+            hidden6_output = {}
+            final_input = {}
+
+            for j = 1, hidden1_size do
+                hidden1_input[j] = 0
+                for k = 1, input_size do
+                    hidden1_input[j] = hidden1_input[j] + x_test[i][k] * weights_input_hidden1[k][j]
+                end
+                hidden1_input[j] = activation_input(hidden1_input[j])
+            end
+
+            for j = 1, hidden2_size do
+                hidden2_input[j] = 0
+                for k = 1, hidden1_size do
+                    hidden2_input[j] = hidden2_input[j] + hidden1_input[k] * weights_hidden1_hidden2[k][j]
+                end
+                hidden2_input[j] = activation_hd(hidden2_input[j])
+            end
+
+            for j = 1, hidden3_size do
+                hidden3_input[j] = 0
+                for k = 1, hidden2_size do
+                    hidden3_input[j] = hidden3_input[j] + hidden2_input[k] * weights_hidden2_hidden3[k][j]
+                end
+                hidden3_input[j] = activation_hd(hidden3_input[j])
+            end
+
+            for j = 1, hidden4_size do
+                hidden4_input[j] = 0
+                for k = 1, hidden3_size do
+                    hidden4_input[j] = hidden4_input[j] + hidden3_input[k] * weights_hidden3_hidden4[k][j]
+                end
+                hidden4_input[j] = activation_hd(hidden4_input[j])
+            end
+
+            for j = 1, hidden5_size do
+                hidden5_input[j] = 0
+                for k = 1, hidden4_size do
+                    hidden5_input[j] = hidden5_input[j] + hidden4_input[k] * weights_hidden4_hidden5[k][j]
+                end
+                hidden5_input[j] = activation_hd(hidden5_input[j])
+            end
+
+            for j = 1, hidden6_size do
+                hidden6_input[j] = 0
+                for k = 1, hidden5_size do
+                    hidden6_input[j] = hidden6_input[j] + hidden5_input[k] * weights_hidden5_hidden6[k][j]
+                end
+                hidden6_input[j] = activation_hd(hidden6_input[j])
+            end
+
+            for j = 1, hidden6_size do
+                hidden6_output[j] = activation_hd(hidden6_input[j])
+            end
+
+            final_input[1] = 0
+            for j = 1, hidden6_size do
+                final_input[1] = final_input[1] + hidden6_output[j] * weights_hidden6_output[j]
+            end
+            final_output = activation_output(final_input[1])
+
+            print("Test input:      " .. grey, table.concat(x_test[i], " ") .. reset)
+            print("Predicted output:" .. red, final_output .. reset)
+        end
     end
 end

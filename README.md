@@ -1,18 +1,18 @@
 # INTRODUCING NEUROSCULPTOR
 
-![Neurosculptor](https://github.com/piotrbajdek/neurosculptor) is a Lua-based deep learning program distributed under the ![BSD 3-Clause License](https://github.com/piotrbajdek/neurosculptor/blob/main/LICENSE.md). It is a highly configurable classification tool that allows for experimentation with various architectures of dense neural networks in a user-friendly manner.
+![Neurosculptor](https://github.com/piotrbajdek/neurosculptor) is a Lua-based deep learning program distributed under the ![BSD 3-Clause License](https://github.com/piotrbajdek/neurosculptor/blob/main/LICENSE.md). It has been developed from the ground up, with many of its algorithms implemented in Lua for the first time. This highly configurable classification tool enables users to experiment with diverse architectures of dense neural networks in a user-friendly manner.
 
 Unlike its primary use for straightforward classification tasks, this software is primarily developed to tackle complex logical problems that are often beyond human solving capabilities. Its potential applications span across various fields such as science, economics, and more.
 
-Users can experiment with hyperparameter tuning using configuration files. The number of hidden layers can be adjusted from 2 to 5, resulting in a total of 4 to 7 layers. The number of neurons in the input layer and each hidden layer can be freely configured and is virtually limitless. The number of output neurons is set to 1.
+Users can experiment with hyperparameter tuning using configuration files. The number of hidden layers can be adjusted from 2 to 6, resulting in a total of 4 to 8 layers. The number of neurons in the input layer and each hidden layer can be freely configured and is virtually limitless. The number of output neurons is set to 1.
 
-In general, 2 hidden layers are suitable for highly nonlinear separation tasks, while 3 hidden layers excel at handling tasks that challenge human capabilities. Architectures with 4 and 5 hidden layers theoretically have the potential to tackle tasks beyond human capabilities but may pose challenges during training.
+In general, 2 hidden layers are suitable for highly nonlinear separation tasks, while 3 hidden layers excel at handling tasks that challenge human capabilities. Architectures with 4 or more hidden layers theoretically have the potential to tackle tasks beyond human capabilities but may pose challenges during training.
 
-Neurosculptor v0.2.1 has been verified to work properly with Lua 5.4.4 and LuaJIT 2.1.0-beta3. In terms of speed, LuaJIT is 14 times faster than Lua when benchmarked on a network composed of 250 neurons with the Sigmoid activation function.
+Neurosculptor offers a wide array of activation functions, including CoLU, GELU, Identity, ReLU, Sigmoid, SiLU, Swish, Tanh, and TanhExp. Additionally, the software provides a choice between two gradient descent optimisation algorithms: AdamW and SGD. While both options are available, it's worth noting that AdamW, known for its advanced capabilities, is the recommended choice for most use cases.
+
+Neurosculptor v0.3.0 has been verified to work properly with Lua 5.4.4 and LuaJIT 2.1.0-beta3. In terms of performance, it's noteworthy that LuaJIT outperforms Lua by a factor of 14 when benchmarked on a neural network consisting of 250 neurons using the Sigmoid activation function and the SGD algorithm.
 
 ## Configuration files
-
-Available activation functions include CoLU, GELU, ReLU, Sigmoid, SiLU, Swish, Tanh, and TanhExp.
 
 `activation_input.conf` - Set the activation function for the input layer.
 
@@ -20,11 +20,13 @@ Available activation functions include CoLU, GELU, ReLU, Sigmoid, SiLU, Swish, T
 
 `activation_output.conf` - Set the activation function for the output layer.
 
-`learning_rate.conf` - Set a real number.
+`optimisation.conf` - Set the gradient descent optimisation algorithm.
+
+`learning_rate.conf` - Set a real number when using the SGD algorithm.
 
 `iterations.conf` - Specify an integer representing the number of epochs.
 
-`hidden_layers.conf` - Set the number of hidden layers as an integer within the range of 2 to 5.
+`hidden_layers.conf` - Set the number of hidden layers as an integer within the range of 2 to 6.
 
 `hidden_1_size.conf` - Configure the number of neurons in the first hidden layer.
 
@@ -36,9 +38,9 @@ Available activation functions include CoLU, GELU, ReLU, Sigmoid, SiLU, Swish, T
 
 `hidden_5_size.conf` - Configure the number of neurons in the fifth hidden layer.
 
-`train_file_x.csv` - In the simplest scenario with the Sigmoid activation function, this file should contain a binary matrix consisting of the numbers 0 and 1.
+`train_file_x.csv` - In the simplest scenario, when using the Sigmoid activation function, this file should contain a binary matrix consisting of the numbers 0 and 1.
 
-`train_file_y.txt` - In the simplest scenario with the Sigmoid activation function, this file should contain a single column of the numbers 0 and 1, corresponding to the columns in `train_file_x.csv`.
+`train_file_y.txt` - In the simplest scenario, when using the Sigmoid activation function, this file should contain a single column of the numbers 0 and 1, corresponding to the columns in `train_file_x.csv`.
 
 `test_file.csv` - Testing data should be formatted like `train_file_x.csv` but can include any number of lines, with each line representing a separate input for analysis.
 
