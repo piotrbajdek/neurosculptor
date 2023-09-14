@@ -4,13 +4,13 @@
 
 Unlike its primary use for straightforward classification tasks, this software is primarily developed to tackle complex logical problems that are often beyond human solving capabilities. Its potential applications span across various fields such as science, economics, and more.
 
-Users can experiment with hyperparameter tuning using configuration files. The number of hidden layers can be adjusted from 2 to 6, resulting in a total of 4 to 8 layers. The number of neurons in the input layer and each hidden layer can be freely configured and is virtually limitless. The number of output neurons is set to 1.
+Users can experiment with hyperparameter tuning using configuration files. The number of hidden layers can be adjusted from 2 to 7, resulting in a total of 4 to 9 layers. The number of neurons in the input layer and each hidden layer can be freely configured and is virtually limitless. The number of output neurons is set to 1.
 
 In general, 2 hidden layers are suitable for highly nonlinear separation tasks, while 3 hidden layers excel at handling tasks that challenge human capabilities. Architectures with 4 or more hidden layers theoretically have the potential to tackle tasks beyond human capabilities but may pose challenges during training.
 
 Neurosculptor offers a wide array of activation functions, including CoLU, GELU, Identity, ReLU, Sigmoid, SiLU, Swish, Tanh, and TanhExp. Additionally, the software provides a choice between two gradient descent optimisation algorithms: AdamW and SGD. While both options are available, it's worth noting that AdamW, known for its advanced capabilities, is the recommended choice for most use cases.
 
-Neurosculptor v0.3.0 has been verified to work properly with Lua 5.4.4 and LuaJIT 2.1.0-beta3. In terms of performance, it's noteworthy that LuaJIT outperforms Lua by a factor of 14 when benchmarked on a neural network consisting of 250 neurons using the Sigmoid activation function and the SGD algorithm.
+Neurosculptor v0.4.0 has been verified to work properly with Lua 5.4.4 and LuaJIT 2.1.0-beta3. In terms of performance, it's noteworthy that LuaJIT outperforms Lua by a factor of 14 when benchmarked on a neural network consisting of 250 neurons using the Sigmoid activation function and the SGD algorithm.
 
 ## Configuration files
 
@@ -24,9 +24,11 @@ Neurosculptor v0.3.0 has been verified to work properly with Lua 5.4.4 and LuaJI
 
 `learning_rate.conf` - Set a real number when using the SGD algorithm.
 
+`weight_decay.conf` - Set a real number when using the AdamW algorithm. Alternatively, a value of 0 can be set if preferring the Adam algorithm over AdamW.
+
 `iterations.conf` - Specify an integer representing the number of epochs.
 
-`hidden_layers.conf` - Set the number of hidden layers as an integer within the range of 2 to 6.
+`hidden_layers.conf` - Set the number of hidden layers as an integer within the range of 2 to 7.
 
 `hidden_1_size.conf` - Configure the number of neurons in the first hidden layer.
 
@@ -39,6 +41,8 @@ Neurosculptor v0.3.0 has been verified to work properly with Lua 5.4.4 and LuaJI
 `hidden_5_size.conf` - Configure the number of neurons in the fifth hidden layer.
 
 `hidden_6_size.conf` - Configure the number of neurons in the sixth hidden layer.
+
+`hidden_7_size.conf` - Configure the number of neurons in the seventh hidden layer.
 
 `train_file_x.csv` - In the simplest scenario, when using the Sigmoid activation function, this file should contain a binary matrix consisting of the numbers 0 and 1.
 
