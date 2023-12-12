@@ -39,7 +39,7 @@ local grey = "\27[38;5;246m"
 local reset = "\27[0m"
 
 print("Lua-Based Deep Learning Program")
-print(grey .. "neurosculptor" .. reset .. " v0.4.0 14.09.2023")
+print(grey .. "neurosculptor" .. reset .. " v0.5.0 12.12.2023")
 print("Copyright © 2023-present, Piotr Bajdek")
 print("")
 
@@ -78,6 +78,10 @@ elseif activation_input == "identity" or activation_input == "Identity" then
     function activation_input(x)
         return x
     end
+elseif activation_input == "mish" or activation_input == "Mish" then
+    function activation_input(x)
+        return x * tanh_approx(math.log(1 + math.exp(x)))
+    end
 elseif activation_input == "relu" or activation_input == "ReLU" then
     function activation_input(x)
         if x > 0 then
@@ -93,6 +97,10 @@ elseif activation_input == "sigmoid" or activation_input == "Sigmoid" then
 elseif activation_input == "silu" or activation_input == "SiLU" then
     function activation_input(x)
         return x * (1 / (1 + math.exp(-x)))
+    end
+elseif activation_input == "smish" or activation_input == "Smish" then
+    function activation_input(x)
+        return x * tanh_approx(math.log(1 + sinh_approx(x)))
     end
 elseif activation_input == "swish" or activation_input == "Swish" then
     function activation_input(x)
@@ -147,6 +155,10 @@ elseif activation_hd == "identity" or activation_hd == "Identity" then
     function activation_hd(x)
         return x
     end
+elseif activation_hd == "mish" or activation_hd == "Mish" then
+    function activation_hd(x)
+        return x * tanh_approx(math.log(1 + math.exp(x)))
+    end
 elseif activation_hd == "relu" or activation_hd == "ReLU" then
     function activation_hd(x)
         if x > 0 then
@@ -162,6 +174,10 @@ elseif activation_hd == "sigmoid" or activation_hd == "Sigmoid" then
 elseif activation_hd == "silu" or activation_hd == "SiLU" then
     function activation_hd(x)
         return x * (1 / (1 + math.exp(-x)))
+    end
+elseif activation_hd == "smish" or activation_hd == "Smish" then
+    function activation_hd(x)
+        return x * tanh_approx(math.log(1 + sinh_approx(x)))
     end
 elseif activation_hd == "swish" or activation_hd == "Swish" then
     function activation_hd(x)
@@ -216,6 +232,10 @@ elseif activation_output == "identity" or activation_output == "Identity" then
     function activation_output(x)
         return x
     end
+elseif activation_output == "mish" or activation_output == "Mish" then
+    function activation_output(x)
+        return x * tanh_approx(math.log(1 + math.exp(x)))
+    end
 elseif activation_output == "relu" or activation_output == "ReLU" then
     function activation_output(x)
         if x > 0 then
@@ -231,6 +251,10 @@ elseif activation_output == "sigmoid" or activation_output == "Sigmoid" then
 elseif activation_output == "silu" or activation_output == "SiLU" then
     function activation_output(x)
         return x * (1 / (1 + math.exp(-x)))
+    end
+elseif activation_output == "smish" or activation_output == "Smish" then
+    function activation_output(x)
+        return x * tanh_approx(math.log(1 + sinh_approx(x)))
     end
 elseif activation_output == "swish" or activation_output == "Swish" then
     function activation_output(x)
@@ -248,6 +272,15 @@ elseif activation_output == "tanhexp" or activation_output == "TanhExp" then
     end
 else
     print(red .. "Invalid value in activation_output.conf" .. reset)
+end
+
+function sinh_approx(x)
+    return x - x^3 / 6 + x^5 / 120 - x^7 / 5040
+end
+
+function tanh_approx(x)
+    local e2x = math.exp(2 * x)
+    return (e2x - 1) / (e2x + 1)
 end
 
 local file = io.open("optimisation.conf", "r")

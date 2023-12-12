@@ -8,9 +8,9 @@ Users can experiment with hyperparameter tuning using configuration files. The n
 
 In general, 2 hidden layers are suitable for highly nonlinear separation tasks, while 3 hidden layers excel at handling tasks that challenge human capabilities. Architectures with 4 or more hidden layers theoretically have the potential to tackle tasks beyond human capabilities but may pose challenges during training.
 
-Neurosculptor offers a wide array of activation functions, including CoLU, GELU, Identity, ReLU, Sigmoid, SiLU, Swish, Tanh, and TanhExp. Additionally, the software provides a choice between two gradient descent optimisation algorithms: AdamW and SGD. While both options are available, it's worth noting that AdamW, known for its advanced capabilities, is the recommended choice for most use cases.
+Neurosculptor offers a wide array of activation functions, including CoLU, GELU, Identity, Mish, ReLU, Sigmoid, SiLU, Smish, Swish, Tanh, and TanhExp. Additionally, the software provides a choice between two gradient descent optimisation algorithms: AdamW and SGD. While both options are available, it's worth noting that AdamW, known for its advanced capabilities, is the recommended choice for most use cases.
 
-Neurosculptor v0.4.0 has been verified to work properly with Lua 5.4.4 and LuaJIT 2.1.0-beta3. In terms of performance, it's noteworthy that LuaJIT outperforms Lua by a factor of 14 when benchmarked on a neural network consisting of 250 neurons using the Sigmoid activation function and the SGD algorithm.
+Neurosculptor v0.5.0 has been verified to work properly with Lua 5.4.6 and LuaJIT 2.1.1692716794. In terms of performance, it's noteworthy that LuaJIT outperforms Lua by a factor of 14 when benchmarked on a neural network consisting of 250 neurons using the Sigmoid activation function and the SGD algorithm.
 
 ## Configuration files
 
